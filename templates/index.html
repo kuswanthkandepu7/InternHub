@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+{% block title %}InternHub · Find Exciting Jobs Today{% endblock %}
+
+{% block content %}
+<!-- ==========================================================================
+     HERO SECTION (EXACT DESIGN REPLICA)
+     ========================================================================== -->
+<section class="hero-wrapper">
+  <div class="hero-card">
+    <!-- SVG Curved Wave separating white hero top-left and dark navy -->
+    <div class="hero-wave-container">
+      <svg class="hero-wave-svg" viewBox="0 0 1200 580" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 0,0 L 1080,0 C 980,80 880,180 720,240 C 580,290 480,360 360,420 C 220,490 80,495 0,495 Z" fill="#ffffff"/>
+      </svg>
+    </div>
+
+    <!-- Hero Content Grid -->
+    <div class="hero-grid">
+      <!-- Left Hero Text & Search -->
+      <div class="hero-left">
+        <h1 class="hero-title">
+          Find <span class="highlight-blue">Exciting Jobs</span><br>Today
+        </h1>
+        <p class="hero-subtitle">
+          Discover amazing job opportunities around the world. Accelerate your career and grow with leading companies.
+        </p>
+
+        <!-- Search Bar Card -->
+        <form class="hero-search-card" method="get" action="{{ url_for('index') }}#jobs">
+          <!-- Location Input -->
+          <div class="search-field">
+            <span class="search-field-label">Location</span>
+            <div class="search-input-group">
+              <i class="fa-solid fa-location-dot location-icon"></i>
+              <input type="text" name="location" class="search-input" placeholder="Enter location" value="{{ location }}">
+            </div>
+          </div>
+
+          <div class="search-field-divider"></div>
+
+          <!-- Job Role Input -->
+          <div class="search-field">
+            <span class="search-field-label">Job Role</span>
+            <div class="search-input-group">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" name="q" class="search-input" placeholder="e.g. Web Develop" value="{{ q }}">
+            </div>
+          </div>
+
+          <!-- Explore Now Button -->
+          <button type="submit" class="btn-explore">Explore Now</button>
+        </form>
+
+        <!-- Popular Searches Row -->
+        <div class="popular-searches">
+          <span class="popular-label">Popular Searches:</span>
+          <a href="{{ url_for('index', q='Software Developer') }}#jobs" class="popular-pill">SOFTWARE DEVELOPER</a>
+          <a href="{{ url_for('index', q='UX Designer') }}#jobs" class="popular-pill">UX DESIGNER</a>
+          <a href="{{ url_for('index', q='Marketer') }}#jobs" class="popular-pill">MARKETER</a>
+        </div>
+      </div>
+
+      <!-- Right Hero Visual -->
+      <div class="hero-visual">
+        <div class="dashed-frame">
+          <!-- 4 Corner Bracket Accents -->
+          <span class="corner-mark corner-tl"></span>
+          <span class="corner-mark corner-tr"></span>
+          <span class="corner-mark corner-bl"></span>
+          <span class="corner-mark corner-br"></span>
+
+          <!-- The Coworkers Meeting Photo -->
+          <img src="{{ url_for('static', filename='images/hero-photo.jpg') }}" alt="Team high-fiving at office desk" class="hero-img">
+
+          <!-- Floating Badges -->
+          <div class="floating-badge floating-search" title="Quick Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <div class="floating-badge floating-pin" title="Location Pins">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Bottom Bar: Explore Job Categories -->
+    <div class="hero-bottom-section">
+      <h2 class="section-hero-heading">
+        Explore <span class="highlight-blue">Job Categories</span>
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     JOB CATEGORIES GRID
+     ========================================================================== -->
+<section class="categories-container">
+  <div class="categories-grid">
+    <a href="{{ url_for('index', q='Technology') }}#jobs" class="category-card">
+      <div class="category-icon-box" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+        <i class="fa-solid fa-laptop-code"></i>
+      </div>
+      <div class="category-info">
+        <h3>Technology & Engineering</h3>
+        <span>24+ Open Roles</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('index', q='Design') }}#jobs" class="category-card">
+      <div class="category-icon-box" style="background: rgba(236, 72, 153, 0.15); color: #f472b6;">
+        <i class="fa-solid fa-bezier-curve"></i>
+      </div>
+      <div class="category-info">
+        <h3>UI/UX & Product Design</h3>
+        <span>18+ Open Roles</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('index', q='Marketing') }}#jobs" class="category-card">
+      <div class="category-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+        <i class="fa-solid fa-arrow-trend-up"></i>
+      </div>
+      <div class="category-info">
+        <h3>Marketing & Growth</h3>
+        <span>15+ Open Roles</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('index', q='Finance') }}#jobs" class="category-card">
+      <div class="category-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+        <i class="fa-solid fa-chart-pie"></i>
+      </div>
+      <div class="category-info">
+        <h3>Finance & Business</h3>
+        <span>12+ Open Roles</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('index', q='Healthcare') }}#jobs" class="category-card">
+      <div class="category-icon-box" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee;">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </div>
+      <div class="category-info">
+        <h3>Healthcare & Medicine</h3>
+        <span>10+ Open Roles</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('index', q='Cloud') }}#jobs" class="category-card">
+      <div class="category-icon-box" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa;">
+        <i class="fa-solid fa-server"></i>
+      </div>
+      <div class="category-info">
+        <h3>DevOps & Cloud Computing</h3>
+        <span>16+ Open Roles</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('index', q='Retail') }}#jobs" class="category-card">
+      <div class="category-icon-box" style="background: rgba(249, 115, 22, 0.15); color: #fb923c;">
+        <i class="fa-solid fa-bag-shopping"></i>
+      </div>
+      <div class="category-info">
+        <h3>Retail & E-commerce</h3>
+        <span>9+ Open Roles</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('index', q='Human Resources') }}#jobs" class="category-card">
+      <div class="category-icon-box" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8;">
+        <i class="fa-solid fa-users-gear"></i>
+      </div>
+      <div class="category-info">
+        <h3>Human Resources & Talent</h3>
+        <span>7+ Open Roles</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     THUMBNAIL 1: "FIND YOUR DREAM JOB" EXPLORATION
+     ========================================================================== -->
+<section class="jobs-section" id="jobs">
+  <div class="jobs-header">
+    <h2>Find your dream job</h2>
+    <p>Looking for jobs? Browse our latest job openings & apply to the best jobs today!</p>
+  </div>
+
+  <!-- Horizontal Dark Search Bar -->
+  <form class="dark-searchbar-card" method="get" action="{{ url_for('index') }}#jobs">
+    <div class="dark-input-wrapper">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" name="q" class="dark-input" placeholder="Search job title or keyword" value="{{ q }}">
+    </div>
+
+    <div class="dark-input-wrapper">
+      <i class="fa-solid fa-location-dot"></i>
+      <input type="text" name="location" class="dark-input" placeholder="Country or timezone" value="{{ location }}">
+    </div>
+
+    {% if company %}
+    <input type="hidden" name="company" value="{{ company }}">
+    {% endif %}
+    {% if mode %}
+    <input type="hidden" name="mode" value="{{ mode }}">
+    {% endif %}
+
+    <button type="submit" class="btn-search-blue">
+      <i class="fa-solid fa-magnifying-glass"></i> Find jobs
+    </button>
+  </form>
+
+  <!-- Two-Column Explorer Layout -->
+  <div class="explorer-layout">
+    <!-- Left Filter Sidebar -->
+    <aside class="filter-sidebar">
+      <div class="filter-header">
+        <h3>Filter</h3>
+        <a href="{{ url_for('index') }}#jobs" class="clear-link">Clear all</a>
+      </div>
+
+      <form method="get" action="{{ url_for('index') }}#jobs" id="filter-form">
+        {% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}
+        {% if location %}<input type="hidden" name="location" value="{{ location }}">{% endif %}
+
+        <!-- Industry Filter -->
+        <div class="filter-group">
+          <div class="filter-title">
+            <span>Industry</span>
+          </div>
+          <div class="filter-options">
+            <label class="filter-label">
+              <input type="radio" name="q" value="" {% if not q %}checked{% endif %} onchange="document.getElementById('filter-form').submit()">
+              <span>All Industries</span>
+            </label>
+            {% for ind in ['Technology', 'Healthcare', 'Finance', 'Education', 'Retail', 'Cloud', 'Marketing'] %}
+            <label class="filter-label">
+              <input type="radio" name="q" value="{{ ind }}" {% if q == ind %}checked{% endif %} onchange="document.getElementById('filter-form').submit()">
+              <span>{{ ind }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Work Mode / Job Type Filter -->
+        <div class="filter-group">
+          <div class="filter-title">
+            <span>Job Type</span>
+          </div>
+          <div class="filter-options">
+            <label class="filter-label">
+              <input type="radio" name="mode" value="" {% if not mode %}checked{% endif %} onchange="document.getElementById('filter-form').submit()">
+              <span>All Types</span>
+            </label>
+            {% for m in ['Remote', 'Hybrid', 'On-site'] %}
+            <label class="filter-label">
+              <input type="radio" name="mode" value="{{ m }}" {% if mode == m %}checked{% endif %} onchange="document.getElementById('filter-form').submit()">
+              <span>{{ m }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Company Filter -->
+        {% if companies %}
+        <div class="filter-group">
+          <div class="filter-title">
+            <span>Company</span>
+          </div>
+          <select name="company" class="filter-select" onchange="document.getElementById('filter-form').submit()">
+            <option value="">All Companies</option>
+            {% for c in companies %}
+            <option value="{{ c.company_name }}" {% if company == c.company_name %}selected{% endif %}>
+              {{ c.company_name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endif %}
+      </form>
+    </aside>
+
+    <!-- Right Results Area -->
+    <main class="results-area">
+      <div class="results-meta-bar">
+        <span class="results-count"><span>{{ internships|length }}</span> Jobs results</span>
+      </div>
+
+      <!-- Job Cards List -->
+      <div class="job-cards-list">
+        {% for i in internships %}
+        <article class="job-card">
+          <div class="job-card-main">
+            <!-- Official Company Vector Logo Slot -->
+            <div class="company-logo-slot" data-company-logo="{{ i.company }}"></div>
+
+            <!-- Job Details -->
+            <div class="job-details">
+              <div class="job-title-row">
+                <a href="{{ url_for('internship_detail', internship_id=i.id) }}" class="job-title">
+                  {{ i.title }}
+                </a>
+                {% if i.featured %}
+                <span class="tag-badge tag-featured"><i class="fa-solid fa-star"></i> Featured</span>
+                {% endif %}
+                <span class="tag-badge tag-category">{{ i.category }}</span>
+              </div>
+
+              <div class="job-company">
+                {{ i.company }}
+              </div>
+
+              <div class="job-meta-chips">
+                <span class="meta-chip">
+                  <i class="fa-solid fa-location-dot"></i> {{ i.location }}
+                </span>
+                <span class="badge-mode">{{ i.mode }}</span>
+                <span class="badge-stipend">
+                  {{ i.stipend or 'Competitive Pay' }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Action -->
+          <div class="job-card-action">
+            <a href="{{ url_for('internship_detail', internship_id=i.id) }}" class="btn-apply-card">
+              Apply Now
+            </a>
+          </div>
+        </article>
+        {% else %}
+        <div class="empty-state">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <h4>No jobs found</h4>
+          <p>Try adjusting your search criteria or clearing active filters.</p>
+          <a href="{{ url_for('index') }}#jobs" class="btn-search-blue" style="margin-top: 16px; display: inline-flex;">
+            Reset Filters
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     THUMBNAIL 2: "FIND YOUR DREAM COMPANY" DIRECTORY
+     ========================================================================== -->
+<section class="companies-section" id="companies">
+  <div class="jobs-header">
+    <h2>Find your dream company</h2>
+    <p>Discover company culture, active openings, and join teams building the future.</p>
+  </div>
+
+  <div class="companies-grid">
+    <!-- Featured Company 1 (Care Connect Health) -->
+    <article class="company-card">
+      <div class="company-card-top">
+        <div class="company-logo-slot" data-company-logo="Care Connect Health"></div>
+        <div class="company-card-info">
+          <h3>Care Connect Health</h3>
+          <span class="company-industry-tag">Healthcare & Telehealth</span>
+        </div>
+      </div>
+      <p class="company-desc">
+        Telehealth platform connecting patients with healthcare providers globally with secure AI diagnostics.
+      </p>
+      <div class="company-card-footer">
+        <span class="open-positions-count"><i class="fa-solid fa-circle-dot"></i> 12 open positions</span>
+        <a href="{{ url_for('index', q='Health') }}#jobs" class="btn-view-profile">View Profile</a>
+      </div>
+    </article>
+
+    <!-- Featured Company 2 (Digital Dynamics) -->
+    <article class="company-card">
+      <div class="company-card-top">
+        <div class="company-logo-slot" data-company-logo="Digital Dynamics"></div>
+        <div class="company-card-info">
+          <h3>Digital Dynamics</h3>
+          <span class="company-industry-tag">Digital Transformation</span>
+        </div>
+      </div>
+      <p class="company-desc">
+        Digital transformation consultancy helping enterprise businesses modernise infrastructure and cloud workloads.
+      </p>
+      <div class="company-card-footer">
+        <span class="open-positions-count"><i class="fa-solid fa-circle-dot"></i> 15 open positions</span>
+        <a href="{{ url_for('index', q='Digital') }}#jobs" class="btn-view-profile">View Profile</a>
+      </div>
+    </article>
+
+    <!-- Dynamic Database Companies with Official Logos -->
+    {% if companies %}
+      {% for c in companies %}
+      <article class="company-card">
+        <div class="company-card-top">
+          <div class="company-logo-slot" data-company-logo="{{ c.company_name }}"></div>
+          <div class="company-card-info">
+            <h3>{{ c.company_name }}</h3>
+            <span class="company-industry-tag">Enterprise Partner</span>
+          </div>
+        </div>
+        <p class="company-desc">
+          Top-tier enterprise hiring high-potential interns, engineers, and professionals for impactful roles.
+        </p>
+        <div class="company-card-footer">
+          <span class="open-positions-count"><i class="fa-solid fa-circle-dot"></i> Active Opportunities</span>
+          <a href="{{ url_for('index', company=c.company_name) }}#jobs" class="btn-view-profile">
+            View Jobs
+          </a>
+        </div>
+      </article>
+      {% endfor %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

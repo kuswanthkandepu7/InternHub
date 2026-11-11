@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Recruiter Talent Studio · InternHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+  <div class="dash-header-row">
+    <div>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+        <h1 style="font-size: 28px; font-weight: 800; color: #ffffff;">Talent Acquisition Studio</h1>
+        <span class="user-role-badge recruiter">Enterprise Suite</span>
+      </div>
+      <p style="color: var(--text-dark-secondary); font-size: 14px;">
+        Manage company job openings, track candidate pipeline, and review resumes.
+      </p>
+    </div>
+
+    <a href="{{ url_for('new_internship') }}" class="btn-search-blue">
+      <i class="fa-solid fa-plus-circle"></i> Post New Opening
+    </a>
+  </div>
+
+  <!-- Executive Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+        <i class="fa-solid fa-briefcase"></i>
+      </div>
+      <div>
+        <div class="stat-number">{{ listings|length }}</div>
+        <div class="stat-label">Active Job Postings</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+        <i class="fa-solid fa-user-group"></i>
+      </div>
+      <div>
+        <div class="stat-number">
+          {% set total_apps = 0 %}
+          {% for l in listings %}{% set total_apps = total_apps + l.applicant_count %}{% endfor %}
+          {{ total_apps }}
+        </div>
+        <div class="stat-label">Total Candidate Applicants</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+        <i class="fa-solid fa-star"></i>
+      </div>
+      <div>
+        <div class="stat-number">
+          {% set feat_count = 0 %}
+          {% for l in listings %}{% if l.featured %}{% set feat_count = feat_count + 1 %}{% endif %}{% endfor %}
+          {{ feat_count }}
+        </div>
+        <div class="stat-label">Featured Roles Promoted</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Listings -->
+  <div class="skills-arsenal-card">
+    <div class="card-heading-row" style="margin-bottom: 22px;">
+      <div>
+        <h3 style="font-size: 19px; font-weight: 800; color: #ffffff;">
+          <i class="fa-solid fa-layer-group" style="color: var(--cyan-neon);"></i>
+          Your Company Job Postings
+        </h3>
+        <p style="font-size: 13px; color: var(--text-dark-secondary); margin-top: 2px;">
+          Live listings currently accepting student candidate applications on InternHub.
+        </p>
+      </div>
+    </div>
+
+    <div class="job-cards-list">
+      {% for i in listings %}
+      <article class="job-card" style="border-radius: var(--radius-md);">
+        <div class="job-card-main">
+          <!-- Official Company Vector Logo Slot -->
+          <div class="company-logo-slot" data-company-logo="{{ i.company }}"></div>
+
+          <div class="job-details">
+            <div class="job-title-row">
+              <a href="{{ url_for('internship_detail', internship_id=i.id) }}" class="job-title">
+                {{ i.title }}
+              </a>
+              {% if i.featured %}
+              <span class="tag-badge tag-featured"><i class="fa-solid fa-star"></i> Featured</span>
+              {% endif %}
+              <span class="tag-badge tag-category">{{ i.category }}</span>
+            </div>
+
+            <div class="job-company">{{ i.company }}</div>
+
+            <div class="job-meta-chips">
+              <span class="meta-chip"><i class="fa-solid fa-location-dot"></i> {{ i.location }}</span>
+              <span class="badge-mode">{{ i.mode }}</span>
+              <span class="badge-stipend">{{ i.stipend or 'Competitive Pay' }}</span>
+              <span class="meta-chip" style="color: #38bdf8; font-weight: 700;">
+                <i class="fa-solid fa-users"></i> {{ i.applicant_count }} Applicant(s)
+              </span>
+            </div>
+
+            <!-- Recruiter Actions -->
+            <div class="card-actions-row">
+              <a href="{{ url_for('manage_applications', internship_id=i.id) }}" class="btn-dash-action" style="background: linear-gradient(135deg, var(--blue-vibrant), var(--blue-primary)); color: #ffffff;">
+                <i class="fa-solid fa-users-viewfinder"></i> Review Applicants ({{ i.applicant_count }})
+              </a>
+
+              <a href="{{ url_for('edit_internship', internship_id=i.id) }}" class="btn-dash-action">
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+              </a>
+
+              <form method="post" action="{{ url_for('feature_internship', internship_id=i.id) }}" style="display: inline;">
+                <button class="btn-dash-action">
+                  <i class="fa-solid fa-star"></i> {% if i.featured %}Unfeature{% else %}Feature Role{% endif %}
+                </button>
+              </form>
+
+              <form method="post" action="{{ url_for('delete_internship', internship_id=i.id) }}" style="display: inline;" onsubmit="return confirm('Delete this job posting and its associated applications?')">
+                <button class="btn-dash-action danger">
+                  <i class="fa-solid fa-trash"></i> Delete
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </article>
+      {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-briefcase" style="font-size: 38px; color: var(--cyan-neon);"></i>
+        <h4>No job openings posted yet</h4>
+        <p>Publish an opening to attract top university talent and engineers across InternHub.</p>
+        <a href="{{ url_for('new_internship') }}" class="btn-search-blue" style="margin-top: 14px; display: inline-flex;">
+          <i class="fa-solid fa-plus-circle"></i> Create First Listing
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

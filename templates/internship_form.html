@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}{% if internship %}Edit Opening{% else %}Post Opening{% endif %} · InternHub{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper" style="max-width: 720px;">
+  <div class="auth-ambient-glow"></div>
+
+  <div class="auth-card-luxury">
+    <!-- Header -->
+    <div style="margin-bottom: 24px;">
+      <a href="{{ url_for('dashboard') }}" class="clear-link" style="font-size: 13px; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Talent Studio
+      </a>
+      <h1 class="auth-title" style="text-align: left;">
+        {% if internship %}Edit Job Opening{% else %}Publish New Job Opening{% endif %}
+      </h1>
+      <p class="auth-subtitle" style="text-align: left; margin-bottom: 0;">
+        Reach vetted students, engineers, and top university talent on InternHub.
+      </p>
+    </div>
+
+    <form method="post">
+      <!-- Title -->
+      <div class="form-floating-group">
+        <label for="title" class="form-floating-label">Job Title *</label>
+        <div class="input-luxury-wrap">
+          <i class="fa-solid fa-briefcase lead-icon"></i>
+          <input type="text" id="title" name="title" class="input-luxury" placeholder="e.g. Cloud DevOps Engineer Intern" required value="{{ internship.title if internship else '' }}">
+        </div>
+      </div>
+
+      <!-- Company -->
+      <div class="form-floating-group">
+        <label for="company" class="form-floating-label">Company / Organization *</label>
+        {% if companies %}
+        <div class="input-luxury-wrap" style="margin-bottom: 8px;">
+          <i class="fa-solid fa-building lead-icon"></i>
+          <select id="company_id" name="company_id" class="input-luxury" style="cursor: pointer;">
+            <option value="">-- Select from your registered companies --</option>
+            {% for c in companies %}
+            <option value="{{ c.company_id }}" {% if internship and internship.company == c.company_name %}selected{% endif %}>
+              {{ c.company_name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endif %}
+        <div class="input-luxury-wrap">
+          <i class="fa-solid fa-signature lead-icon"></i>
+          <input type="text" id="company" name="company" class="input-luxury" placeholder="Or enter custom company name (e.g. Google, Amazon, Acme Labs)" value="{{ internship.company if internship else '' }}">
+        </div>
+      </div>
+
+      <!-- Location & Mode Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
+        <div>
+          <label for="location" class="form-floating-label">Location *</label>
+          <div class="input-luxury-wrap">
+            <i class="fa-solid fa-location-dot lead-icon"></i>
+            <input type="text" id="location" name="location" class="input-luxury" placeholder="e.g. New York / Remote" required value="{{ internship.location if internship else '' }}">
+          </div>
+        </div>
+
+        <div>
+          <label for="mode" class="form-floating-label">Work Model *</label>
+          <div class="input-luxury-wrap">
+            <i class="fa-solid fa-house-laptop lead-icon"></i>
+            <select id="mode" name="mode" class="input-luxury" style="cursor: pointer;" required>
+              {% for m in ['Remote','Hybrid','On-site'] %}
+              <option value="{{ m }}" {% if internship and internship.mode == m %}selected{% endif %}>{{ m }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category & Compensation Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
+        <div>
+          <label for="category" class="form-floating-label">Industry Category *</label>
+          <div class="input-luxury-wrap">
+            <i class="fa-solid fa-layer-group lead-icon"></i>
+            <input type="text" id="category" name="category" class="input-luxury" placeholder="e.g. Technology" required value="{{ internship.category if internship else '' }}">
+          </div>
+        </div>
+
+        <div>
+          <label for="stipend" class="form-floating-label">Compensation / Stipend</label>
+          <div class="input-luxury-wrap">
+            <i class="fa-solid fa-wallet lead-icon"></i>
+            <input type="text" id="stipend" name="stipend" class="input-luxury" placeholder="e.g. $60,000 - $80,000 / yr" value="{{ internship.stipend if internship else '' }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-floating-group">
+        <label for="description" class="form-floating-label">Job Description & Responsibilities *</label>
+        <textarea id="description" name="description" class="form-control" rows="7" placeholder="Describe the role responsibilities, required qualifications, tech stack, and team culture..." required>{{ internship.description if internship else '' }}</textarea>
+      </div>
+
+      <button type="submit" class="btn-primary-glow" style="margin-top: 12px;">
+        <i class="fa-solid fa-sparkles"></i> {% if internship %}Save & Update Opening{% else %}Publish Job on InternHub{% endif %}
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Sign In · InternHub{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+  <div class="auth-ambient-glow"></div>
+
+  <div class="auth-card-luxury">
+    <!-- Brand Mark Header -->
+    <div class="auth-brand-badge">
+      <div class="brand-icon-box" style="width: 44px; height: 44px;">
+        <svg viewBox="0 0 28 28" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 6v16M21 6v16M7 14h14" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="3.5" fill="#38bdf8"/>
+        </svg>
+      </div>
+      <span class="brand-name" style="font-size: 24px;">Intern<strong>Hub</strong></span>
+    </div>
+
+    <h1 class="auth-title">Welcome Back</h1>
+    <p class="auth-subtitle">Sign in to your account to continue your journey.</p>
+
+    <!-- Student / Recruiter Portal Mode Switcher -->
+    <div class="auth-role-tabs">
+      <button type="button" class="auth-role-tab active" id="tab-student" onclick="setRole('student')">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span>Student Portal</span>
+      </button>
+      <button type="button" class="auth-role-tab" id="tab-recruiter" onclick="setRole('recruiter')">
+        <i class="fa-solid fa-briefcase"></i>
+        <span>Employer & Recruiter</span>
+      </button>
+    </div>
+
+    <!-- Quick Demo Accounts One-Click Bar for Reviewers & Recruiters -->
+    <div class="demo-access-strip">
+      <div class="demo-access-label">
+        <i class="fa-solid fa-bolt"></i> One-Click Demo Credentials
+      </div>
+      <div class="demo-chips-grid">
+        <button type="button" class="demo-chip-btn" onclick="fillDemo('akhil@example.com', 'password123', 'student')">
+          <i class="fa-solid fa-user-graduate" style="color: #60a5fa;"></i> Student Demo
+        </button>
+        <button type="button" class="demo-chip-btn" onclick="fillDemo('ram@example.com', 'password123', 'recruiter')">
+          <i class="fa-solid fa-building" style="color: #34d399;"></i> Recruiter Demo
+        </button>
+      </div>
+    </div>
+
+    <!-- The Login Form -->
+    <form method="post" action="{{ url_for('login') }}">
+      <div class="form-floating-group">
+        <label for="email" class="form-floating-label">Email Address</label>
+        <div class="input-luxury-wrap">
+          <i class="fa-solid fa-envelope lead-icon"></i>
+          <input type="email" id="email" name="email" class="input-luxury" placeholder="name@example.com" required autofocus>
+        </div>
+      </div>
+
+      <div class="form-floating-group">
+        <div class="form-floating-label">
+          <label for="password">Password</label>
+          <a href="#" style="color: var(--blue-vibrant); font-size: 11.5px; font-weight: 600;">Forgot?</a>
+        </div>
+        <div class="input-luxury-wrap">
+          <i class="fa-solid fa-lock lead-icon"></i>
+          <input type="password" id="password" name="password" class="input-luxury" placeholder="••••••••" required>
+          <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility()" title="Show/Hide Password">
+            <i class="fa-solid fa-eye" id="eye-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <label class="filter-label" style="font-size: 12.5px;">
+          <input type="checkbox" name="remember" checked>
+          <span>Keep me signed in</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary-glow">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Account
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      New to InternHub? <a href="{{ url_for('register') }}">Create an account today</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function setRole(role) {
+  document.getElementById('tab-student').classList.toggle('active', role === 'student');
+  document.getElementById('tab-recruiter').classList.toggle('active', role === 'recruiter');
+}
+
+function fillDemo(email, pass, role) {
+  setRole(role);
+  document.getElementById('email').value = email;
+  document.getElementById('password').value = pass;
+}
+
+function togglePasswordVisibility() {
+  const input = document.getElementById('password');
+  const eye = document.getElementById('eye-icon');
+  if (input.type === 'password') {
+    input.type = 'text';
+    eye.classList.replace('fa-eye', 'fa-eye-slash');
+  } else {
+    input.type = 'password';
+    eye.classList.replace('fa-eye-slash', 'fa-eye');
+  }
+}
+</script>
+{% endblock %}

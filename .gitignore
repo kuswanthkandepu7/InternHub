@@ -1,0 +1,5 @@
+.env
+__pycache__/
+*.pyc
+uploads/resumes/*
+!uploads/resumes/.gitkeep

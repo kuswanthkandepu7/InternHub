@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% block title %}Candidate Portfolio & Dashboard · InternHub{% endblock %}
+
+{% block content %}
+<div class="portfolio-dashboard-wrap">
+  <!-- ==========================================================================
+       AWARD-WINNING CANDIDATE HERO PORTFOLIO CARD
+       ========================================================================== -->
+  <div class="portfolio-hero-card">
+    <div class="hero-mesh-overlay"></div>
+
+    <div class="portfolio-hero-top">
+      <div class="portfolio-avatar-ring">
+        <img src="{{ url_for('static', filename='images/avatar-thumb.png') }}" alt="{{ session.get('name', 'Candidate') }}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80'">
+        <span class="avatar-live-beacon" title="Available for hire"></span>
+      </div>
+
+      <div class="portfolio-header-copy">
+        <div class="portfolio-name-row">
+          <h1 class="portfolio-name">{{ session.get('name', 'Akhil Reddy') }}</h1>
+          <span class="badge-verified-candidate">
+            <i class="fa-solid fa-circle-check"></i> Verified Candidate
+          </span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #34d399; background: rgba(16, 185, 129, 0.12); padding: 3px 10px; border-radius: 9999px;">
+            <i class="fa-solid fa-bolt"></i> Open to Hire
+          </span>
+        </div>
+
+        <p class="portfolio-role-title">
+          Full Stack Software Engineer · Cloud & Distributed Systems
+        </p>
+
+        <div class="portfolio-chips-bar">
+          <span class="contact-pill-item">
+            <i class="fa-solid fa-location-dot"></i> New York / Remote
+          </span>
+          <span class="contact-pill-item">
+            <i class="fa-solid fa-phone"></i> +1 (555) 019-2834
+          </span>
+          <span class="contact-pill-item">
+            <i class="fa-solid fa-envelope"></i> {{ session.get('email', 'candidate@internhub.com') }}
+          </span>
+          <a href="https://github.com" target="_blank" class="contact-pill-item" style="color: #60a5fa;">
+            <i class="fa-brands fa-github"></i> github.com
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Dynamic KPI Strip -->
+    <div class="kpi-strip">
+      <div class="kpi-item">
+        <div class="kpi-val">{{ applications|length }}</div>
+        <div class="kpi-label">Applications Sent</div>
+      </div>
+
+      <div class="kpi-item">
+        {% set in_review = 0 %}
+        {% for a in applications %}
+          {% if a.status in ['Reviewed', 'Shortlisted', 'Pending'] %}{% set in_review = in_review + 1 %}{% endif %}
+        {% endfor %}
+        <div class="kpi-val" style="color: #38bdf8;">{{ in_review }}</div>
+        <div class="kpi-label">Active in Pipeline</div>
+      </div>
+
+      <div class="kpi-item">
+        {% set accepted = 0 %}
+        {% for a in applications %}{% if a.status == 'Accepted' %}{% set accepted = accepted + 1 %}{% endif %}{% endfor %}
+        <div class="kpi-val" style="color: #34d399;">{{ accepted }}</div>
+        <div class="kpi-label">Offers & Accepted</div>
+      </div>
+
+      <div class="kpi-item">
+        <div class="kpi-val" style="color: #fbbf24;">98%</div>
+        <div class="kpi-label">Profile Strength</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       LIVE APPLICATION TRACKER (INTERACTIVE 4-STAGE STEPPER)
+       ========================================================================== -->
+  <div class="skills-arsenal-card">
+    <div class="card-heading-row" style="margin-bottom: 22px;">
+      <div>
+        <h3 style="font-size: 20px; font-weight: 800; color: #ffffff;">
+          <i class="fa-solid fa-timeline" style="color: var(--cyan-neon);"></i>
+          Live Application Pipeline Tracker
+        </h3>
+        <p style="font-size: 13px; color: var(--text-dark-secondary); margin-top: 4px;">
+          Real-time recruitment stage updates from hiring managers.
+        </p>
+      </div>
+
+      <a href="{{ url_for('index') }}#jobs" class="btn-search-blue" style="font-size: 13px; padding: 8px 18px;">
+        <i class="fa-solid fa-magnifying-glass"></i> Find More Roles
+      </a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      {% for a in applications %}
+      <article class="application-stepper-card">
+        <div class="app-card-top-row">
+          <div class="app-company-meta">
+            <!-- Official Company Vector Logo Slot -->
+            <div class="company-logo-slot" data-company-logo="{{ a.company }}"></div>
+
+            <div>
+              <h4 class="app-role-heading">
+                <a href="{{ url_for('internship_detail', internship_id=a.internship_id) }}" style="color: #ffffff; text-decoration: none;">
+                  {{ a.title }}
+                </a>
+              </h4>
+              <p class="app-company-name">
+                {{ a.company }} · <i class="fa-solid fa-location-dot" style="color: var(--blue-vibrant); font-size: 11px;"></i> {{ a.location }}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <span class="status-badge {{ a.status }}" style="font-size: 12px; padding: 5px 14px;">
+              <i class="fa-solid fa-circle" style="font-size: 7px;"></i>
+              Status: {{ a.status }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 4-Stage Visual Progress Stepper -->
+        <div class="progress-stepper">
+          <!-- Stage 1: Applied -->
+          <div class="stepper-stage completed">
+            <div class="stepper-circle">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <span class="stepper-label">1. Applied</span>
+          </div>
+
+          <!-- Stage 2: Under Review -->
+          <div class="stepper-stage {% if a.status in ['Reviewed', 'Shortlisted', 'Accepted', 'Rejected'] %}completed{% else %}active{% endif %}">
+            <div class="stepper-circle">
+              {% if a.status in ['Reviewed', 'Shortlisted', 'Accepted', 'Rejected'] %}
+              <i class="fa-solid fa-check"></i>
+              {% else %}
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              {% endif %}
+            </div>
+            <span class="stepper-label">2. Under Review</span>
+          </div>
+
+          <!-- Stage 3: Shortlisted -->
+          <div class="stepper-stage {% if a.status in ['Shortlisted', 'Accepted'] %}completed{% elif a.status == 'Reviewed' %}active{% endif %}">
+            <div class="stepper-circle">
+              {% if a.status in ['Shortlisted', 'Accepted'] %}
+              <i class="fa-solid fa-check"></i>
+              {% else %}
+              <i class="fa-solid fa-user-tie"></i>
+              {% endif %}
+            </div>
+            <span class="stepper-label">3. Shortlisted</span>
+          </div>
+
+          <!-- Stage 4: Decision -->
+          <div class="stepper-stage {% if a.status == 'Accepted' %}completed{% elif a.status == 'Rejected' %}rejected{% elif a.status == 'Shortlisted' %}active{% endif %}">
+            <div class="stepper-circle" {% if a.status == 'Rejected' %}style="background: #ef4444; border-color: #ef4444; color: #fff;"{% endif %}>
+              {% if a.status == 'Accepted' %}
+              <i class="fa-solid fa-trophy"></i>
+              {% elif a.status == 'Rejected' %}
+              <i class="fa-solid fa-xmark"></i>
+              {% else %}
+              <i class="fa-solid fa-award"></i>
+              {% endif %}
+            </div>
+            <span class="stepper-label">
+              {% if a.status == 'Accepted' %}Offer Accepted{% elif a.status == 'Rejected' %}Not Selected{% else %}4. Decision{% endif %}
+            </span>
+          </div>
+        </div>
+
+        <div class="app-card-footer">
+          <span>
+            <i class="fa-regular fa-clock"></i> Applied on {{ a.created_at.strftime('%B %d, %Y') }}
+          </span>
+
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="{{ url_for('internship_detail', internship_id=a.internship_id) }}" class="btn-dash-action" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+              <i class="fa-solid fa-eye"></i> View Listing
+            </a>
+          </div>
+        </div>
+      </article>
+      {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-paper-plane" style="font-size: 40px; color: var(--cyan-neon);"></i>
+        <h4>No active applications in your pipeline</h4>
+        <p>Explore curated internships and apply to top engineering and tech roles today.</p>
+        <a href="{{ url_for('index') }}#jobs" class="btn-search-blue" style="margin-top: 16px; display: inline-flex;">
+          <i class="fa-solid fa-magnifying-glass"></i> Explore Open Internships
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       PROFESSIONAL SUMMARY & SKILLS ARSENAL
+       ========================================================================== -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <!-- Professional Summary -->
+    <div class="skills-arsenal-card">
+      <div class="card-heading-row">
+        <h3 style="font-size: 17px; font-weight: 800; color: #ffffff;">
+          <i class="fa-solid fa-user-astronaut" style="color: var(--blue-vibrant);"></i>
+          Professional Summary
+        </h3>
+        <button class="card-action-icon" title="Edit Summary" onclick="alert('Profile summary updated!')">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+      </div>
+      <p class="profile-summary-text" style="font-size: 13.5px; line-height: 1.75; color: #cbd5e1;">
+        Experienced software engineer with 5+ years of hands-on expertise building scalable microservices, interactive web frontends, and distributed cloud applications. Passionate about engineering excellence, test-driven development, and solving high-throughput technical challenges with modern cloud ecosystems.
+      </p>
+    </div>
+
+    <!-- Verified Certifications -->
+    <div class="skills-arsenal-card">
+      <div class="card-heading-row">
+        <h3 style="font-size: 17px; font-weight: 800; color: #ffffff;">
+          <i class="fa-solid fa-shield-halved" style="color: var(--amber-gold);"></i>
+          Verified Certifications
+        </h3>
+        <button class="card-action-icon" title="Add Certification">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="cert-item" style="background: #0c1527; border-color: #1e2f50;">
+          <div class="cert-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <i class="fa-brands fa-aws"></i>
+          </div>
+          <div class="cert-info">
+            <h4 style="font-size: 13.5px;">AWS Certified Solutions Architect</h4>
+            <p>Amazon Web Services · Credential ID: AWS-98124 · 2024</p>
+          </div>
+        </div>
+
+        <div class="cert-item" style="background: #0c1527; border-color: #1e2f50;">
+          <div class="cert-icon" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">
+            <i class="fa-brands fa-google"></i>
+          </div>
+          <div class="cert-info">
+            <h4 style="font-size: 13.5px;">Google Cloud Associate Cloud Engineer</h4>
+            <p>Google Cloud · Issued Dec 2024</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Skills Arsenal -->
+  <div class="skills-arsenal-card">
+    <div class="card-heading-row">
+      <h3 style="font-size: 18px; font-weight: 800; color: #ffffff;">
+        <i class="fa-solid fa-layer-group" style="color: var(--cyan-neon);"></i>
+        Interactive Skills Arsenal
+      </h3>
+      <button class="card-action-icon" onclick="addNewSkill()" title="Add Custom Skill">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+
+    <!-- Frontend -->
+    <div class="skills-category-group">
+      <div class="skills-category-title">Frontend & Web Technologies</div>
+      <div class="skills-pills-wrap" id="skills-frontend">
+        <span class="luxury-skill-pill"><i class="fa-brands fa-react"></i> React 19</span>
+        <span class="luxury-skill-pill"><i class="fa-brands fa-js"></i> TypeScript</span>
+        <span class="luxury-skill-pill"><i class="fa-brands fa-vuejs"></i> Vue.js</span>
+        <span class="luxury-skill-pill"><i class="fa-solid fa-code"></i> Next.js</span>
+        <span class="luxury-skill-pill"><i class="fa-brands fa-css3-alt"></i> Tailwind CSS</span>
+        <span class="luxury-skill-pill"><i class="fa-solid fa-wand-magic-sparkles"></i> Redux Toolkit</span>
+      </div>
+    </div>
+
+    <!-- Backend & Systems -->
+    <div class="skills-category-group">
+      <div class="skills-category-title">Backend, APIs & Databases</div>
+      <div class="skills-pills-wrap">
+        <span class="luxury-skill-pill"><i class="fa-brands fa-node"></i> Node.js</span>
+        <span class="luxury-skill-pill"><i class="fa-brands fa-python"></i> Python / FastAPI</span>
+        <span class="luxury-skill-pill"><i class="fa-solid fa-database"></i> PostgreSQL</span>
+        <span class="luxury-skill-pill"><i class="fa-solid fa-leaf"></i> MongoDB</span>
+        <span class="luxury-skill-pill"><i class="fa-solid fa-bolt"></i> Redis</span>
+        <span class="luxury-skill-pill"><i class="fa-solid fa-network-wired"></i> GraphQL & gRPC</span>
+      </div>
+    </div>
+
+    <!-- Cloud & DevOps -->
+    <div class="skills-category-group">
+      <div class="skills-category-title">Cloud Infrastructure & DevOps</div>
+      <div class="skills-pills-wrap">
+        <span class="luxury-skill-pill"><i class="fa-brands fa-aws"></i> AWS Lambda & S3</span>
+        <span class="luxury-skill-pill"><i class="fa-brands fa-docker"></i> Docker</span>
+        <span class="luxury-skill-pill"><i class="fa-solid fa-dharmachakra"></i> Kubernetes</span>
+        <span class="luxury-skill-pill"><i class="fa-brands fa-git-alt"></i> CI/CD GitHub Actions</span>
+        <span class="luxury-skill-pill"><i class="fa-solid fa-chart-line"></i> Prometheus & Grafana</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function addNewSkill() {
+  const name = prompt('Enter a new skill name:');
+  if (name && name.trim()) {
+    const wrap = document.getElementById('skills-frontend');
+    const pill = document.createElement('span');
+    pill.className = 'luxury-skill-pill';
+    pill.innerHTML = '<i class="fa-solid fa-star" style="color: #fbbf24;"></i> ' + name.trim();
+    wrap.appendChild(pill);
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Candidate Pipeline · {{ title }} · InternHub{% endblock %}
+
+{% block content %}
+<div class="ats-board-container">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb-nav" style="margin-bottom: 20px;">
+    <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-arrow-left"></i> Talent Studio Dashboard</a>
+    <span>/</span>
+    <span style="color: #ffffff;">{{ title }}</span>
+  </nav>
+
+  <div class="dash-header-row">
+    <div>
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <h1 style="font-size: 28px; font-weight: 800; color: #ffffff;">Candidate Pipeline</h1>
+        <span class="tag-badge tag-category">{{ apps|length }} Applicants</span>
+      </div>
+      <p style="color: var(--text-dark-secondary); font-size: 14px;">
+        Reviewing submissions for <strong>{{ title }}</strong>
+      </p>
+    </div>
+  </div>
+
+  <!-- Interactive Filter Tabs -->
+  <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
+    <button class="btn-dash-action" style="background: var(--blue-vibrant); color: #fff;" onclick="filterAts('all')">
+      All ({{ apps|length }})
+    </button>
+    <button class="btn-dash-action" onclick="filterAts('Pending')">
+      <i class="fa-solid fa-clock" style="color: #fbbf24;"></i> Pending
+    </button>
+    <button class="btn-dash-action" onclick="filterAts('Reviewed')">
+      <i class="fa-solid fa-eye" style="color: #60a5fa;"></i> Reviewed
+    </button>
+    <button class="btn-dash-action" onclick="filterAts('Shortlisted')">
+      <i class="fa-solid fa-star" style="color: #c084fc;"></i> Shortlisted
+    </button>
+    <button class="btn-dash-action" onclick="filterAts('Accepted')">
+      <i class="fa-solid fa-check" style="color: #34d399;"></i> Accepted
+    </button>
+    <button class="btn-dash-action" onclick="filterAts('Rejected')">
+      <i class="fa-solid fa-xmark" style="color: #f87171;"></i> Rejected
+    </button>
+  </div>
+
+  <!-- Candidate Cards List -->
+  <div id="candidates-container">
+    {% for a in apps %}
+    <article class="candidate-card-luxury candidate-item" data-status="{{ a.status }}">
+      <div class="candidate-top-bar">
+        <div class="candidate-profile-block">
+          <div class="candidate-avatar">
+            {{ a.name[:1] }}
+          </div>
+
+          <div>
+            <div class="candidate-name">{{ a.name }}</div>
+            <a href="mailto:{{ a.email }}" class="candidate-email">
+              <i class="fa-solid fa-envelope"></i> {{ a.email }}
+            </a>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <!-- Status Badge -->
+          <span class="status-badge {{ a.status }}" style="font-size: 12px; padding: 5px 14px;">
+            <i class="fa-solid fa-circle" style="font-size: 7px;"></i> {{ a.status }}
+          </span>
+
+          <!-- Resume Download Button -->
+          {% if a.resume_filename %}
+          <a href="{{ url_for('download_resume', application_id=a.id) }}" class="btn-dash-action" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.35); font-weight: 700;">
+            <i class="fa-solid fa-file-arrow-down"></i> Download Resume
+          </a>
+          {% else %}
+          <span style="font-size: 12px; color: var(--text-dark-muted);">No resume attached</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Candidate Note Preview -->
+      <div class="candidate-note-box">
+        <div style="font-size: 11px; font-weight: 800; color: var(--cyan-neon); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+          <i class="fa-solid fa-comment-dots"></i> Candidate Pitch Note:
+        </div>
+        {{ a.message or 'No additional cover note provided by candidate.' }}
+      </div>
+
+      <!-- Stage Updater Row -->
+      <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--border-dark); font-size: 12.5px; color: var(--text-dark-muted); flex-wrap: wrap; gap: 10px;">
+        <span>
+          <i class="fa-regular fa-calendar-check"></i> Applied on {{ a.created_at.strftime('%B %d, %Y') }}
+        </span>
+
+        <form method="post" action="{{ url_for('update_status', application_id=a.id) }}" style="display: flex; gap: 8px; align-items: center;">
+          <span style="font-size: 12px; font-weight: 700; color: #ffffff;">Update Stage:</span>
+          <select name="status" class="filter-select" style="padding: 6px 12px; font-size: 12.5px; width: auto;">
+            {% for s in ['Pending','Reviewed','Shortlisted','Rejected','Accepted'] %}
+            <option value="{{ s }}" {% if a.status == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn-search-blue" style="padding: 7px 16px; font-size: 12px;">
+            Save
+          </button>
+        </form>
+      </div>
+    </article>
+    {% else %}
+    <div class="empty-state">
+      <i class="fa-solid fa-inbox" style="font-size: 38px; color: var(--cyan-neon);"></i>
+      <h4>No applications received yet</h4>
+      <p>Candidate submissions will appear here in real-time as students apply.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+function filterAts(status) {
+  const items = document.querySelectorAll('.candidate-item');
+  items.forEach(el => {
+    if (status === 'all' || el.getAttribute('data-status') === status) {
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+}
+</script>
+{% endblock %}

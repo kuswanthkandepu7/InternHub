@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} at {{ item.company }} · InternHub{% endblock %}
+
+{% block content %}
+<div class="dashboard-container" style="max-width: 1180px;">
+  <!-- Breadcrumb Navigation -->
+  <nav class="breadcrumb-nav" style="margin-bottom: 24px;">
+    <a href="{{ url_for('index') }}"><i class="fa-solid fa-house"></i> Home</a>
+    <span>/</span>
+    <a href="{{ url_for('index') }}#jobs">Jobs</a>
+    <span>/</span>
+    <span style="color: #ffffff;">{{ item.title }}</span>
+  </nav>
+
+  <div class="detail-grid-layout">
+    <!-- Left Column: Comprehensive Job Specifications -->
+    <article class="detail-main-pane">
+      <div style="display: flex; align-items: flex-start; gap: 20px; margin-bottom: 20px;">
+        <!-- Official Company Vector Logo Slot -->
+        <div class="company-logo-slot" data-company-logo="{{ item.company }}" style="width: 68px; height: 68px; border-radius: var(--radius-lg);"></div>
+
+        <div style="flex: 1;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+            {% if item.featured %}
+            <span class="tag-badge tag-featured"><i class="fa-solid fa-star"></i> Featured Role</span>
+            {% endif %}
+            <span class="tag-badge tag-category">{{ item.category }}</span>
+            <span class="badge-mode">{{ item.mode }}</span>
+          </div>
+
+          <h1 style="font-size: 28px; font-weight: 800; color: #ffffff; letter-spacing: -0.6px; margin-bottom: 4px;">
+            {{ item.title }}
+          </h1>
+
+          <div style="display: flex; align-items: center; gap: 10px; color: var(--blue-light); font-weight: 700; font-size: 15px;">
+            <span>{{ item.company }}</span>
+            <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; background: rgba(59, 130, 246, 0.15); padding: 2px 8px; border-radius: 9999px;">
+              <i class="fa-solid fa-circle-check"></i> Verified Partner
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; background: #0c1527; padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-dark); margin-bottom: 28px;">
+        <div>
+          <span style="font-size: 11px; font-weight: 700; color: var(--text-dark-muted); text-transform: uppercase;">Location</span>
+          <div style="font-size: 14px; font-weight: 600; color: #ffffff; margin-top: 2px;">
+            <i class="fa-solid fa-location-dot" style="color: var(--blue-vibrant);"></i> {{ item.location }}
+          </div>
+        </div>
+
+        <div>
+          <span style="font-size: 11px; font-weight: 700; color: var(--text-dark-muted); text-transform: uppercase;">Compensation</span>
+          <div style="font-size: 14px; font-weight: 700; color: #34d399; margin-top: 2px;">
+            <i class="fa-solid fa-wallet"></i> {{ item.stipend or 'Competitive Pay' }}
+          </div>
+        </div>
+
+        <div>
+          <span style="font-size: 11px; font-weight: 700; color: var(--text-dark-muted); text-transform: uppercase;">Work Model</span>
+          <div style="font-size: 14px; font-weight: 600; color: #ffffff; margin-top: 2px;">
+            <i class="fa-solid fa-building-user" style="color: var(--cyan-neon);"></i> {{ item.mode }}
+          </div>
+        </div>
+
+        <div>
+          <span style="font-size: 11px; font-weight: 700; color: var(--text-dark-muted); text-transform: uppercase;">Recruiter</span>
+          <div style="font-size: 14px; font-weight: 600; color: #ffffff; margin-top: 2px;">
+            <i class="fa-solid fa-user-check" style="color: var(--amber-gold);"></i> {{ item.recruiter_name }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Perks & Highlights -->
+      <div style="margin-bottom: 28px;">
+        <h4 style="font-size: 14px; font-weight: 800; color: var(--cyan-neon); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px;">
+          Key Role Perks & Growth
+        </h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <span class="luxury-skill-pill"><i class="fa-solid fa-briefcase"></i> Direct Mentorship</span>
+          <span class="luxury-skill-pill"><i class="fa-solid fa-laptop"></i> High-Impact Work</span>
+          <span class="luxury-skill-pill"><i class="fa-solid fa-clock"></i> Flexible Schedule</span>
+          <span class="luxury-skill-pill"><i class="fa-solid fa-certificate"></i> PPO / Full-time Opportunity</span>
+        </div>
+      </div>
+
+      <div style="height: 1px; background: var(--border-dark); margin: 24px 0;"></div>
+
+      <!-- Role Description -->
+      <h3 style="font-size: 19px; font-weight: 800; color: #ffffff; margin-bottom: 14px;">
+        About This Opportunity
+      </h3>
+      <div style="font-size: 14.5px; line-height: 1.8; color: #cbd5e1; white-space: pre-wrap;">
+{{ item.description }}
+      </div>
+    </article>
+
+    <!-- Right Column: Sticky Application Panel -->
+    <aside class="sticky-apply-pane">
+      <div style="margin-bottom: 18px;">
+        <h3 style="font-size: 20px; font-weight: 800; color: #ffffff;">
+          Apply for this Role
+        </h3>
+        <p style="font-size: 13px; color: var(--text-dark-secondary); margin-top: 4px;">
+          Direct candidate submission to {{ item.company }}.
+        </p>
+      </div>
+
+      {% if session.get('role') == 'student' %}
+        {% if applied %}
+        <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: var(--radius-md); padding: 20px; text-align: center;">
+          <i class="fa-solid fa-circle-check" style="font-size: 36px; color: #34d399; margin-bottom: 10px;"></i>
+          <h4 style="font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 4px;">Application Submitted!</h4>
+          <p style="font-size: 13px; color: #cbd5e1; margin-bottom: 14px;">
+            Your resume and details have been delivered to the hiring team.
+          </p>
+          <a href="{{ url_for('dashboard') }}" class="btn-search-blue" style="font-size: 13px; padding: 9px 16px;">
+            <i class="fa-solid fa-gauge"></i> Track in Dashboard
+          </a>
+        </div>
+        {% else %}
+        <form method="post" enctype="multipart/form-data" action="{{ url_for('apply', internship_id=item.id) }}">
+          <div class="form-floating-group">
+            <label for="message" class="form-floating-label">Note to Hiring Manager (Optional)</label>
+            <textarea id="message" name="message" class="form-control" rows="4" placeholder="Briefly highlight relevant projects, key achievements, or why you're passionate about {{ item.company }}..."></textarea>
+          </div>
+
+          <div class="form-floating-group">
+            <label class="form-floating-label">Resume / Portfolio (PDF, DOC, DOCX up to 5 MB) *</label>
+            <div class="file-drop-luxury" onclick="document.getElementById('resume-file').click()">
+              <input type="file" id="resume-file" name="resume" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required onchange="updateFilePreview(this)">
+              <div class="file-drop-label" id="file-drop-view">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 30px; color: var(--cyan-neon);"></i>
+                <div style="font-size: 13px; color: #ffffff; margin-top: 6px;">
+                  <strong>Click to browse</strong> or drag & drop resume
+                </div>
+                <div style="font-size: 11px; color: var(--text-dark-muted);">Supports PDF, DOC, DOCX (Max 5 MB)</div>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary-glow">
+            <i class="fa-solid fa-paper-plane"></i> Submit Application
+          </button>
+        </form>
+        {% endif %}
+      {% elif not session.get('user_id') %}
+      <div style="text-align: center; padding: 18px 0;">
+        <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; color: var(--blue-vibrant); font-size: 22px;">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h4 style="font-size: 17px; font-weight: 700; color: #ffffff; margin-bottom: 6px;">Sign in to Apply</h4>
+        <p style="font-size: 13px; color: var(--text-dark-secondary); margin-bottom: 18px;">
+          Log in with your InternHub student account to submit your resume.
+        </p>
+        <a href="{{ url_for('login') }}" class="btn-primary-glow" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Apply
+        </a>
+      </div>
+      {% else %}
+      <div style="text-align: center; padding: 14px 0; color: var(--text-dark-secondary); font-size: 13.5px;">
+        <i class="fa-solid fa-circle-info" style="color: var(--blue-vibrant); font-size: 20px; margin-bottom: 8px;"></i>
+        <p>You are signed in as a Recruiter. Students can apply to this role directly from this page.</p>
+      </div>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+
+<script>
+function updateFilePreview(input) {
+  const view = document.getElementById('file-drop-view');
+  if (input.files && input.files[0]) {
+    view.innerHTML = '<i class="fa-solid fa-file-circle-check" style="font-size: 32px; color: #34d399;"></i><div style="font-size: 13.5px; font-weight: 700; color: #ffffff; margin-top: 6px;">' + input.files[0].name + '</div><div style="font-size: 11px; color: #34d399;">Ready for submission · Click to replace</div>';
+  }
+}
+</script>
+{% endblock %}
