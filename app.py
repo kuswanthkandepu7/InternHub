@@ -150,25 +150,7 @@ def index():
 
 @app.route("/companies")
 def companies():
-    rows = get_companies()
-    return render_template_string("""
-    <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Companies | InternHub</title><style>
-    body{font-family:Arial,sans-serif;max-width:1000px;margin:35px auto;padding:0 18px;background:#f7f8fc;color:#202532}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-    .card{background:white;border:1px solid #e3e7ef;border-radius:12px;padding:20px}
-    a{color:#3157c8;text-decoration:none}.btn{display:inline-block;background:#3157c8;color:white;padding:10px 14px;border-radius:8px}
-    .muted{color:#687086}</style></head><body>
-    <p><a href="{{ url_for('index') }}">← Home</a>
-    {% if session.get('role') == 'recruiter' %} · <a class="btn" href="{{ url_for('new_company') }}">Add company</a>{% endif %}</p>
-    <h1>Companies</h1>
-    {% if rows %}<div class="grid">{% for c in rows %}<article class="card">
-      {% if c.logo_url %}<img src="{{ c.logo_url }}" alt="" style="max-width:100px;max-height:60px">{% endif %}
-      <h2>{{ c.company_name }}</h2><p class="muted">{{ c.industry or 'Industry not specified' }}</p>
-      <p>{{ c.description or '' }}</p><p>{{ c.location or '' }}</p>
-      {% if c.website %}<a href="{{ c.website }}" target="_blank" rel="noopener">Website</a>{% endif %}
-    </article>{% endfor %}</div>{% else %}<p>No companies added yet.</p>{% endif %}
-    </body></html>""", rows=rows)
+    return redirect(url_for("index") + "#companies")
 
 
 @app.route("/company/new", methods=["GET", "POST"])

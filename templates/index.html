@@ -352,69 +352,251 @@
 <section class="companies-section" id="companies">
   <div class="jobs-header">
     <h2>Find your dream company</h2>
-    <p>Discover company culture, active openings, and join teams building the future.</p>
+    <p>Look for companies · Discover culture, verified opportunities, and join top engineering teams.</p>
   </div>
 
-  <div class="companies-grid">
-    <!-- Featured Company 1 (Care Connect Health) -->
-    <article class="company-card">
-      <div class="company-card-top">
-        <div class="company-logo-slot" data-company-logo="Care Connect Health"></div>
-        <div class="company-card-info">
-          <h3>Care Connect Health</h3>
-          <span class="company-industry-tag">Healthcare & Telehealth</span>
+  <!-- Dual-Field Luxury Search Bar matching Thumbnail 2 -->
+  <div class="dark-searchbar-card">
+    <div class="dark-input-wrapper">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="company-name-search" class="dark-input" placeholder="Search company name" oninput="filterCompaniesLive()">
+    </div>
+
+    <div class="dark-input-wrapper">
+      <i class="fa-solid fa-location-dot"></i>
+      <input type="text" id="company-location-search" class="dark-input" placeholder="Country or timezone" oninput="filterCompaniesLive()">
+    </div>
+
+    <button type="button" class="btn-search-blue" onclick="filterCompaniesLive()">
+      <i class="fa-solid fa-magnifying-glass"></i> Find companies
+    </button>
+  </div>
+
+  <!-- Two-Column Explorer Layout matching Thumbnail 2 -->
+  <div class="explorer-layout">
+    <!-- Left Filter Sidebar -->
+    <aside class="filter-sidebar">
+      <div class="filter-header">
+        <h3>Filter</h3>
+        <a href="javascript:void(0)" class="clear-link" onclick="clearCompanyFilters()">Clear all</a>
+      </div>
+
+      <!-- Industry Filter Group -->
+      <div class="filter-group">
+        <div class="filter-title">
+          <span>Industry</span>
+        </div>
+        <div class="filter-options">
+          <label class="filter-label">
+            <input type="radio" name="company-industry-filter" value="" checked onchange="filterCompaniesLive()">
+            <span>All Industries</span>
+          </label>
+          <label class="filter-label">
+            <input type="radio" name="company-industry-filter" value="Technology" onchange="filterCompaniesLive()">
+            <span>Technology</span>
+          </label>
+          <label class="filter-label">
+            <input type="radio" name="company-industry-filter" value="Healthcare" onchange="filterCompaniesLive()">
+            <span>Healthcare</span>
+          </label>
+          <label class="filter-label">
+            <input type="radio" name="company-industry-filter" value="Cloud" onchange="filterCompaniesLive()">
+            <span>Cloud & DevOps</span>
+          </label>
+          <label class="filter-label">
+            <input type="radio" name="company-industry-filter" value="Consulting" onchange="filterCompaniesLive()">
+            <span>IT & Consulting</span>
+          </label>
+          <label class="filter-label">
+            <input type="radio" name="company-industry-filter" value="Entertainment" onchange="filterCompaniesLive()">
+            <span>Media & Streaming</span>
+          </label>
         </div>
       </div>
-      <p class="company-desc">
-        Telehealth platform connecting patients with healthcare providers globally with secure AI diagnostics.
-      </p>
-      <div class="company-card-footer">
-        <span class="open-positions-count"><i class="fa-solid fa-circle-dot"></i> 12 open positions</span>
-        <a href="{{ url_for('index', q='Health') }}#jobs" class="btn-view-profile">View Profile</a>
-      </div>
-    </article>
 
-    <!-- Featured Company 2 (Digital Dynamics) -->
-    <article class="company-card">
-      <div class="company-card-top">
-        <div class="company-logo-slot" data-company-logo="Digital Dynamics"></div>
-        <div class="company-card-info">
-          <h3>Digital Dynamics</h3>
-          <span class="company-industry-tag">Digital Transformation</span>
+      <!-- Company Type Filter Group -->
+      <div class="filter-group">
+        <div class="filter-title">
+          <span>Company Type</span>
+        </div>
+        <div class="filter-options">
+          <label class="filter-label">
+            <input type="radio" name="company-type-filter" value="" checked onchange="filterCompaniesLive()">
+            <span>All Types</span>
+          </label>
+          <label class="filter-label">
+            <input type="radio" name="company-type-filter" value="Tech Giant" onchange="filterCompaniesLive()">
+            <span>Tech Giant / FAANG</span>
+          </label>
+          <label class="filter-label">
+            <input type="radio" name="company-type-filter" value="Corporate" onchange="filterCompaniesLive()">
+            <span>Corporate Enterprise</span>
+          </label>
+          <label class="filter-label">
+            <input type="radio" name="company-type-filter" value="High Growth" onchange="filterCompaniesLive()">
+            <span>High Growth / Startup</span>
+          </label>
         </div>
       </div>
-      <p class="company-desc">
-        Digital transformation consultancy helping enterprise businesses modernise infrastructure and cloud workloads.
-      </p>
-      <div class="company-card-footer">
-        <span class="open-positions-count"><i class="fa-solid fa-circle-dot"></i> 15 open positions</span>
-        <a href="{{ url_for('index', q='Digital') }}#jobs" class="btn-view-profile">View Profile</a>
-      </div>
-    </article>
+    </aside>
 
-    <!-- Dynamic Database Companies with Official Logos -->
-    {% if companies %}
-      {% for c in companies %}
-      <article class="company-card">
-        <div class="company-card-top">
-          <div class="company-logo-slot" data-company-logo="{{ c.company_name }}"></div>
-          <div class="company-card-info">
-            <h3>{{ c.company_name }}</h3>
-            <span class="company-industry-tag">Enterprise Partner</span>
+    <!-- Right Company Cards Area -->
+    <main class="company-results-area" style="flex: 1; min-width: 0;">
+      <div class="results-count-bar" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <span class="results-count" id="companies-count-display">
+          <strong>16</strong> Companies found
+        </span>
+      </div>
+
+      {% set company_meta = {
+        'Google': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'Mountain View, CA / Hybrid', 'openings': '28 open positions', 'desc': 'Global technology leader shaping Search, Cloud, Android, Gemini AI models, and planetary-scale infrastructure.'},
+        'Microsoft': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'Redmond, WA / Hybrid', 'openings': '24 open positions', 'desc': 'Empowering every person and organization on the planet to achieve more with Azure, Windows, and AI solutions.'},
+        'Amazon': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'Seattle, WA / Arlington, VA', 'openings': '32 open positions', 'desc': "Earth's most customer-centric company pioneering global retail, AWS cloud computing, and automated logistics."},
+        'Apple': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'Cupertino, CA / On-site', 'openings': '18 open positions', 'desc': 'Innovating the future of personal technology with iPhone, Mac, iOS, Apple Silicon chips, and privacy-first software.'},
+        'Meta': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'Menlo Park, CA / Hybrid', 'openings': '19 open positions', 'desc': 'Building technologies that help people connect, find communities, open-source Llama models, and grow businesses.'},
+        'Netflix': {'industry': 'Entertainment', 'type': 'Tech Giant', 'loc': 'Los Gatos, CA / Remote', 'openings': '14 open positions', 'desc': 'World leading entertainment service delighting 260M+ subscribers with high-throughput streaming systems.'},
+        'Spotify': {'industry': 'Entertainment', 'type': 'Tech Giant', 'loc': 'Stockholm / Remote', 'openings': '11 open positions', 'desc': 'Unlocking human creativity by giving millions of audio creators and artists the opportunity to live off their art.'},
+        'NVIDIA': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'Santa Clara, CA / Hybrid', 'openings': '26 open positions', 'desc': 'Pioneering accelerated computing and GPUs powering modern generative AI, robotics, simulation, and HPC.'},
+        'Tesla': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'Austin, TX / Palo Alto, CA', 'openings': '21 open positions', 'desc': "Accelerating the world's transition to sustainable energy through electric vehicles, solar, and autonomous AI systems."},
+        'Uber': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'San Francisco, CA / Hybrid', 'openings': '16 open positions', 'desc': 'Transforming urban mobility and delivery services across 70+ countries with distributed microservices.'},
+        'Adobe': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'San Jose, CA / Hybrid', 'openings': '15 open positions', 'desc': 'Changing the world through digital experiences with Photoshop, Premiere Pro, Figma integration, and Firefly AI.'},
+        'Airbnb': {'industry': 'Technology', 'type': 'Tech Giant', 'loc': 'San Francisco, CA / Remote', 'openings': '13 open positions', 'desc': 'Creating a world where anyone can belong anywhere through a trusted global community of hosts and travelers.'},
+        'Infosys': {'industry': 'Consulting', 'type': 'Corporate', 'loc': 'Bengaluru, India / Global', 'openings': '35 open positions', 'desc': 'Global leader in digital services and consulting navigating enterprise clients across 56 countries into digital transformation.'},
+        'TCS': {'industry': 'Consulting', 'type': 'Corporate', 'loc': 'Mumbai, India / Global', 'openings': '40 open positions', 'desc': 'Enterprise IT powerhouse delivering AI solutions, cognitive business operations, and engineering services worldwide.'},
+        'Care Connect Health': {'industry': 'Healthcare', 'type': 'High Growth', 'loc': 'Boston, MA / Remote', 'openings': '12 open positions', 'desc': 'Telehealth platform connecting patients with healthcare providers globally with secure AI diagnostics.'},
+        'Digital Dynamics': {'industry': 'Cloud', 'type': 'Corporate', 'loc': 'San Francisco, CA / Remote', 'openings': '15 open positions', 'desc': 'Digital transformation consultancy helping enterprise businesses modernise infrastructure and cloud workloads.'}
+      } %}
+
+      <div class="company-results-list" id="company-cards-list">
+        <!-- Featured Company 1 (Care Connect Health) -->
+        <article class="company-card" data-company-name="Care Connect Health" data-company-industry="Healthcare" data-company-type="High Growth" data-company-location="Boston, MA / Remote" data-company-desc="Telehealth platform connecting patients with healthcare providers globally with secure AI diagnostics.">
+          <div class="company-card-main">
+            <div class="company-logo-slot" data-company-logo="Care Connect Health"></div>
+            <div class="company-details">
+              <div class="company-title-row">
+                <h3 class="company-title">Care Connect Health</h3>
+                <span class="company-verified-tag"><i class="fa-solid fa-circle-check"></i> Verified Partner</span>
+                <span class="company-industry-tag">Healthcare & Telehealth</span>
+              </div>
+              <p class="company-desc">Telehealth platform connecting patients with healthcare providers globally with secure AI diagnostics.</p>
+              <div class="company-meta-row">
+                <span class="company-meta-item"><i class="fa-solid fa-location-dot"></i> Boston, MA / Remote</span>
+                <span class="open-positions-count"><i class="fa-solid fa-circle-dot"></i> 12 open positions</span>
+              </div>
+            </div>
           </div>
-        </div>
-        <p class="company-desc">
-          Top-tier enterprise hiring high-potential interns, engineers, and professionals for impactful roles.
-        </p>
-        <div class="company-card-footer">
-          <span class="open-positions-count"><i class="fa-solid fa-circle-dot"></i> Active Opportunities</span>
-          <a href="{{ url_for('index', company=c.company_name) }}#jobs" class="btn-view-profile">
-            View Jobs
-          </a>
-        </div>
-      </article>
-      {% endfor %}
-    {% endif %}
+          <div class="company-card-action">
+            <a href="{{ url_for('index', q='Health') }}#jobs" class="btn-view-profile">View Profile</a>
+          </div>
+        </article>
+
+        <!-- Featured Company 2 (Digital Dynamics) -->
+        <article class="company-card" data-company-name="Digital Dynamics" data-company-industry="Cloud" data-company-type="Corporate" data-company-location="San Francisco, CA / Remote" data-company-desc="Digital transformation consultancy helping enterprise businesses modernise infrastructure and cloud workloads.">
+          <div class="company-card-main">
+            <div class="company-logo-slot" data-company-logo="Digital Dynamics"></div>
+            <div class="company-details">
+              <div class="company-title-row">
+                <h3 class="company-title">Digital Dynamics</h3>
+                <span class="company-verified-tag"><i class="fa-solid fa-circle-check"></i> Verified Partner</span>
+                <span class="company-industry-tag">Cloud & Infrastructure</span>
+              </div>
+              <p class="company-desc">Digital transformation consultancy helping enterprise businesses modernise infrastructure and cloud workloads.</p>
+              <div class="company-meta-row">
+                <span class="company-meta-item"><i class="fa-solid fa-location-dot"></i> San Francisco, CA / Remote</span>
+                <span class="open-positions-count"><i class="fa-solid fa-circle-dot"></i> 15 open positions</span>
+              </div>
+            </div>
+          </div>
+          <div class="company-card-action">
+            <a href="{{ url_for('index', q='Digital') }}#jobs" class="btn-view-profile">View Profile</a>
+          </div>
+        </article>
+
+        <!-- Dynamic Database Companies with Official Vector Logos -->
+        {% if companies %}
+          {% for c in companies %}
+            {% set cname = c.company_name %}
+            {% set m = company_meta.get(cname, {'industry': 'Technology', 'type': 'Corporate', 'loc': 'Global / Remote', 'openings': 'Active Opportunities', 'desc': 'Top-tier enterprise hiring high-potential interns, engineers, and professionals for impactful roles.'}) %}
+            <article class="company-card" data-company-name="{{ cname }}" data-company-industry="{{ m.industry }}" data-company-type="{{ m.type }}" data-company-location="{{ m.loc }}" data-company-desc="{{ m.desc }}">
+              <div class="company-card-main">
+                <div class="company-logo-slot" data-company-logo="{{ cname }}"></div>
+                <div class="company-details">
+                  <div class="company-title-row">
+                    <h3 class="company-title">{{ cname }}</h3>
+                    <span class="company-verified-tag"><i class="fa-solid fa-circle-check"></i> Verified Partner</span>
+                    <span class="company-industry-tag">{{ m.industry }}</span>
+                  </div>
+                  <p class="company-desc">{{ m.desc }}</p>
+                  <div class="company-meta-row">
+                    <span class="company-meta-item"><i class="fa-solid fa-location-dot"></i> {{ m.loc }}</span>
+                    <span class="open-positions-count"><i class="fa-solid fa-circle-dot"></i> {{ m.openings }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="company-card-action">
+                <a href="{{ url_for('index', company=cname) }}#jobs" class="btn-view-profile">View Profile</a>
+              </div>
+            </article>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </main>
   </div>
 </section>
+
+<script>
+function filterCompaniesLive() {
+  const nameQuery = (document.getElementById('company-name-search')?.value || '').toLowerCase().trim();
+  const locQuery = (document.getElementById('company-location-search')?.value || '').toLowerCase().trim();
+  const selectedIndustry = (document.querySelector('input[name="company-industry-filter"]:checked')?.value || '').toLowerCase().trim();
+  const selectedType = (document.querySelector('input[name="company-type-filter"]:checked')?.value || '').toLowerCase().trim();
+
+  const cards = document.querySelectorAll('#company-cards-list .company-card');
+  let visibleCount = 0;
+
+  cards.forEach(card => {
+    const name = (card.getAttribute('data-company-name') || '').toLowerCase();
+    const loc = (card.getAttribute('data-company-location') || '').toLowerCase();
+    const ind = (card.getAttribute('data-company-industry') || '').toLowerCase();
+    const typ = (card.getAttribute('data-company-type') || '').toLowerCase();
+    const desc = (card.getAttribute('data-company-desc') || '').toLowerCase();
+
+    const matchesName = !nameQuery || name.includes(nameQuery) || desc.includes(nameQuery);
+    const matchesLoc = !locQuery || loc.includes(locQuery);
+    const matchesInd = !selectedIndustry || ind.includes(selectedIndustry);
+    const matchesTyp = !selectedType || typ.includes(selectedType);
+
+    if (matchesName && matchesLoc && matchesInd && matchesTyp) {
+      card.style.display = 'flex';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  const countDisplay = document.getElementById('companies-count-display');
+  if (countDisplay) {
+    countDisplay.innerHTML = `<strong>${visibleCount}</strong> Companies found`;
+  }
+}
+
+function clearCompanyFilters() {
+  const nameInput = document.getElementById('company-name-search');
+  const locInput = document.getElementById('company-location-search');
+  if (nameInput) nameInput.value = '';
+  if (locInput) locInput.value = '';
+  const allIndRadio = document.querySelector('input[name="company-industry-filter"][value=""]');
+  if (allIndRadio) allIndRadio.checked = true;
+  const allTypeRadio = document.querySelector('input[name="company-type-filter"][value=""]');
+  if (allTypeRadio) allTypeRadio.checked = true;
+  filterCompaniesLive();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.CompanyLogos && typeof window.CompanyLogos.init === 'function') {
+    window.CompanyLogos.init();
+  }
+  filterCompaniesLive();
+});
+</script>
 {% endblock %}
