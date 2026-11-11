@@ -40,17 +40,134 @@
           <span>Companies</span>
         </a>
 
-        <!-- Settings Button -->
-        <button class="icon-btn" title="Theme Settings" type="button" onclick="document.body.classList.toggle('light-theme')">
-          <i class="fa-solid fa-gear"></i>
-        </button>
+        <!-- Interactive Settings Button & Dropdown Panel -->
+        <div class="header-dropdown-wrap">
+          <button class="icon-btn" id="btn-settings-toggle" title="Settings & Preferences" type="button" onclick="toggleSettingsPanel(event)">
+            <i class="fa-solid fa-gear"></i>
+          </button>
 
-        <!-- Notification Bell with Badge "2" -->
-        <div class="notif-wrapper">
-          <button class="icon-btn" title="Notifications" type="button">
+          <div class="popover-panel" id="settings-popover">
+            <div class="popover-header">
+              <span class="popover-title">
+                <i class="fa-solid fa-sliders" style="color: var(--cyan-neon);"></i>
+                Settings & Preferences
+              </span>
+              <button type="button" onclick="toggleSettingsPanel(event)" style="background: none; border: none; color: var(--text-dark-muted); cursor: pointer; font-size: 14px;">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            <div class="popover-body">
+              <!-- Theme Switcher -->
+              <div class="settings-group">
+                <div class="settings-label">Interface Theme</div>
+                <div class="theme-mode-row">
+                  <button type="button" class="theme-pill-btn active" id="btn-theme-dark" onclick="setAppTheme('dark')">
+                    <i class="fa-solid fa-moon"></i> Dark Mode
+                  </button>
+                  <button type="button" class="theme-pill-btn" id="btn-theme-light" onclick="setAppTheme('light')">
+                    <i class="fa-solid fa-sun"></i> Light Mode
+                  </button>
+                </div>
+              </div>
+
+              <!-- Notifications Preferences -->
+              <div class="settings-group">
+                <div class="settings-label">Alert Preferences</div>
+                <div class="settings-toggle-row">
+                  <span>Application Status Updates</span>
+                  <input type="checkbox" checked style="accent-color: var(--blue-vibrant); cursor: pointer;">
+                </div>
+                <div class="settings-toggle-row">
+                  <span>New Internship Recommendations</span>
+                  <input type="checkbox" checked style="accent-color: var(--blue-vibrant); cursor: pointer;">
+                </div>
+              </div>
+
+              <!-- Recruiter Visibility -->
+              <div class="settings-group">
+                <div class="settings-label">Candidate Visibility</div>
+                <div class="settings-toggle-row">
+                  <span>Visible to Enterprise Recruiters</span>
+                  <input type="checkbox" checked style="accent-color: #10b981; cursor: pointer;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Notification Bell & Dropdown Panel -->
+        <div class="header-dropdown-wrap">
+          <button class="icon-btn" id="btn-notif-toggle" title="Notifications" type="button" onclick="toggleNotifPanel(event)">
             <i class="fa-solid fa-bell"></i>
           </button>
-          <span class="notif-badge">2</span>
+          <span class="notif-badge" id="nav-notif-badge">2</span>
+
+          <div class="popover-panel" id="notif-popover">
+            <div class="popover-header">
+              <span class="popover-title">
+                <i class="fa-solid fa-bell" style="color: var(--blue-vibrant);"></i>
+                Notifications
+              </span>
+              <button type="button" onclick="markAllNotificationsRead()" style="background: none; border: none; color: var(--blue-vibrant); font-size: 11.5px; font-weight: 700; cursor: pointer;">
+                Mark all read
+              </button>
+            </div>
+
+            <div class="popover-body" id="notif-items-list">
+              <!-- Item 1 -->
+              <div class="notif-item">
+                <div class="notif-icon" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+                  <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div class="notif-content">
+                  <div class="notif-text">
+                    Your application for <strong>AWS with DevOps</strong> at <strong>Amazon</strong> has been <strong>Reviewed</strong>.
+                  </div>
+                  <div class="notif-time">2 hours ago · Application Pipeline</div>
+                </div>
+              </div>
+
+              <!-- Item 2 -->
+              <div class="notif-item">
+                <div class="notif-icon" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+                  <i class="fa-brands fa-google"></i>
+                </div>
+                <div class="notif-content">
+                  <div class="notif-text">
+                    <strong>Google</strong> just posted a new opening: <strong>Software Engineering Intern - Cloud Platforms</strong>.
+                  </div>
+                  <div class="notif-time">5 hours ago · New Opening</div>
+                </div>
+              </div>
+
+              <!-- Item 3 -->
+              <div class="notif-item">
+                <div class="notif-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                  <i class="fa-solid fa-user-check"></i>
+                </div>
+                <div class="notif-content">
+                  <div class="notif-text">
+                    A technical recruiter from <strong>Microsoft</strong> viewed your candidate portfolio.
+                  </div>
+                  <div class="notif-time">1 day ago · Profile Activity</div>
+                </div>
+              </div>
+
+              <!-- Item 4 -->
+              <div class="notif-item">
+                <div class="notif-icon" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee;">
+                  <i class="fa-solid fa-sparkles"></i>
+                </div>
+                <div class="notif-content">
+                  <div class="notif-text">
+                    <strong>Profile Tip:</strong> Update your college & projects to increase hiring recruiter callbacks by 45%.
+                  </div>
+                  <div class="notif-time">2 days ago · Career Tip</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="nav-divider"></div>
@@ -143,5 +260,67 @@
 
   <!-- Official Company Vector Logos Injector -->
   <script src="{{ url_for('static', filename='company-logos.js') }}"></script>
+
+  <!-- Global Header Interactive Scripts -->
+  <script>
+  function toggleNotifPanel(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('notif-popover');
+    const settings = document.getElementById('settings-popover');
+    if (settings) settings.classList.remove('open');
+    panel.classList.toggle('open');
+  }
+
+  function toggleSettingsPanel(e) {
+    e.stopPropagation();
+    const panel = document.getElementById('settings-popover');
+    const notif = document.getElementById('notif-popover');
+    if (notif) notif.classList.remove('open');
+    panel.classList.toggle('open');
+  }
+
+  function markAllNotificationsRead() {
+    const badge = document.getElementById('nav-notif-badge');
+    if (badge) badge.style.display = 'none';
+    const items = document.querySelectorAll('.notif-item');
+    items.forEach(it => {
+      it.style.opacity = '0.65';
+    });
+  }
+
+  function setAppTheme(theme) {
+    if (theme === 'light') {
+      document.body.classList.add('light-theme');
+      document.getElementById('btn-theme-light').classList.add('active');
+      document.getElementById('btn-theme-dark').classList.remove('active');
+      localStorage.setItem('internhub_theme', 'light');
+    } else {
+      document.body.classList.remove('light-theme');
+      document.getElementById('btn-theme-dark').classList.add('active');
+      document.getElementById('btn-theme-light').classList.remove('active');
+      localStorage.setItem('internhub_theme', 'dark');
+    }
+  }
+
+  // Load saved theme on boot
+  document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('internhub_theme');
+    if (saved === 'light') {
+      setAppTheme('light');
+    }
+
+    // Close popovers on click outside
+    document.addEventListener('click', (e) => {
+      const notif = document.getElementById('notif-popover');
+      const settings = document.getElementById('settings-popover');
+      if (notif && !notif.contains(e.target) && e.target.id !== 'btn-notif-toggle') {
+        notif.classList.remove('open');
+      }
+      if (settings && !settings.contains(e.target) && e.target.id !== 'btn-settings-toggle') {
+        settings.classList.remove('open');
+      }
+    });
+  });
+  </script>
 </body>
 </html>

@@ -290,7 +290,29 @@ def dashboard():
                    WHERE a.student_id=? ORDER BY a.created_at DESC""",
                 (session["user_id"],)
             ).fetchall()
-        return render_template("student_dashboard.html", applications=applications)
+            profile = con.execute(
+                "SELECT * FROM student_profiles WHERE user_id=?",
+                (session["user_id"],)
+            ).fetchone()
+            if not profile:
+                profile = {
+                    "headline": "Full Stack Software Engineer · Cloud & Distributed Systems",
+                    "phone": "+1 (555) 019-2834",
+                    "location": "New York / Remote",
+                    "college": "Stanford University",
+                    "degree": "B.S. in Computer Science",
+                    "grad_year": "2026",
+                    "cgpa": "3.92 / 4.0",
+                    "summary": "Experienced software engineer with hands-on expertise building scalable microservices, interactive web frontends, and distributed cloud applications. Passionate about engineering excellence, test-driven development, and solving high-throughput technical challenges.",
+                    "skills": "React 19, TypeScript, Python, Node.js, PostgreSQL, Docker, AWS, Tailwind CSS, Kubernetes",
+                    "experience": "Frontend Engineering Intern at TechFlow (6 mos) · Contributed to customer portal redesign with React and Next.js.",
+                    "projects": "CloudFlow: Distributed task queue in Go & Redis · Real-time collaborative whiteboard in WebSockets",
+                    "certifications": "AWS Certified Solutions Architect (2024), Google Cloud Associate Cloud Engineer (2024)",
+                    "github": "https://github.com/akhil-reddy",
+                    "linkedin": "https://linkedin.com/in/akhil-reddy",
+                    "portfolio": "https://akhilreddy.dev"
+                }
+        return render_template("student_dashboard.html", applications=applications, profile=profile)
     with db() as con:
         listings = con.execute(
             """SELECT i.*,
@@ -299,6 +321,47 @@ def dashboard():
             (session["user_id"],)
         ).fetchall()
     return render_template("recruiter_dashboard.html", listings=listings)
+
+
+@app.route("/student/profile/update", methods=["POST"])
+@role_required("student")
+def update_student_profile():
+    name = request.form.get("name", "").strip()
+    headline = request.form.get("headline", "").strip()
+    phone = request.form.get("phone", "").strip()
+    location = request.form.get("location", "").strip()
+    college = request.form.get("college", "").strip()
+    degree = request.form.get("degree", "").strip()
+    grad_year = request.form.get("grad_year", "").strip()
+    cgpa = request.form.get("cgpa", "").strip()
+    summary = request.form.get("summary", "").strip()
+    skills = request.form.get("skills", "").strip()
+    experience = request.form.get("experience", "").strip()
+    projects = request.form.get("projects", "").strip()
+    certifications = request.form.get("certifications", "").strip()
+    github = request.form.get("github", "").strip()
+    linkedin = request.form.get("linkedin", "").strip()
+    portfolio = request.form.get("portfolio", "").strip()
+
+    uid = session["user_id"]
+    with db() as con:
+        if name:
+            con.execute("UPDATE users SET name=? WHERE id=?", (name, uid))
+            session["name"] = name
+        con.execute(
+            """INSERT INTO student_profiles (user_id, headline, phone, location, college, degree, grad_year, cgpa, summary, skills, experience, projects, certifications, github, linkedin, portfolio)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON DUPLICATE KEY UPDATE
+                   headline=VALUES(headline), phone=VALUES(phone), location=VALUES(location),
+                   college=VALUES(college), degree=VALUES(degree), grad_year=VALUES(grad_year),
+                   cgpa=VALUES(cgpa), summary=VALUES(summary), skills=VALUES(skills),
+                   experience=VALUES(experience), projects=VALUES(projects), certifications=VALUES(certifications),
+                   github=VALUES(github), linkedin=VALUES(linkedin), portfolio=VALUES(portfolio)""",
+            (uid, headline, phone, location, college, degree, grad_year, cgpa, summary, skills, experience, projects, certifications, github, linkedin, portfolio)
+        )
+
+    flash("Profile and resume details updated successfully!", "success")
+    return redirect(url_for("dashboard"))
 
 
 # INTERNSHIPS

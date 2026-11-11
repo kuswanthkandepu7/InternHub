@@ -1,141 +1,123 @@
 {% extends "base.html" %}
-{% block title %}Candidate Portfolio & Dashboard · InternHub{% endblock %}
+{% block title %}My Resume & Student Dashboard · InternHub{% endblock %}
 
 {% block content %}
 <div class="portfolio-dashboard-wrap">
   <!-- ==========================================================================
-       AWARD-WINNING CANDIDATE HERO PORTFOLIO CARD
+       HERO RESUME CARD (INTERNSHALA STYLE)
        ========================================================================== -->
   <div class="portfolio-hero-card">
-    <div class="hero-mesh-overlay"></div>
-
     <div class="portfolio-hero-top">
       <div class="portfolio-avatar-ring">
-        <img src="{{ url_for('static', filename='images/avatar-thumb.png') }}" alt="{{ session.get('name', 'Candidate') }}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=160&auto=format&fit=crop&q=80'">
-        <span class="avatar-live-beacon" title="Available for hire"></span>
+        <div class="avatar-circle" style="width: 100%; height: 100%; font-size: 28px; background: linear-gradient(135deg, #0ea5e9, #2563eb);">
+          {{ session.get('name', 'Akhil Reddy')[:1] }}
+        </div>
+        <span class="avatar-live-beacon" title="Active Candidate"></span>
       </div>
 
       <div class="portfolio-header-copy">
         <div class="portfolio-name-row">
-          <h1 class="portfolio-name">{{ session.get('name', 'Akhil Reddy') }}</h1>
-          <span class="badge-verified-candidate">
-            <i class="fa-solid fa-circle-check"></i> Verified Candidate
+          <h1 class="portfolio-name" id="display-name">{{ session.get('name', 'Akhil Reddy') }}</h1>
+          <span class="badge-mode" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 700;">
+            <i class="fa-solid fa-bolt"></i> Actively Looking for Internships
           </span>
-          <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #34d399; background: rgba(16, 185, 129, 0.12); padding: 3px 10px; border-radius: 9999px;">
-            <i class="fa-solid fa-bolt"></i> Open to Hire
+          <span class="badge-mode" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-weight: 700;">
+            <i class="fa-solid fa-circle-check"></i> Verified Profile
           </span>
         </div>
 
-        <p class="portfolio-role-title">
-          Full Stack Software Engineer · Cloud & Distributed Systems
+        <p class="portfolio-role-title" id="display-headline">
+          {{ profile.headline or 'Full Stack Software Engineer · Cloud & Distributed Systems' }}
         </p>
 
         <div class="portfolio-chips-bar">
           <span class="contact-pill-item">
-            <i class="fa-solid fa-location-dot"></i> New York / Remote
+            <i class="fa-solid fa-location-dot"></i> <span id="display-location">{{ profile.location or 'New York / Remote' }}</span>
           </span>
           <span class="contact-pill-item">
-            <i class="fa-solid fa-phone"></i> +1 (555) 019-2834
+            <i class="fa-solid fa-phone"></i> <span id="display-phone">{{ profile.phone or '+1 (555) 019-2834' }}</span>
           </span>
           <span class="contact-pill-item">
-            <i class="fa-solid fa-envelope"></i> {{ session.get('email', 'candidate@internhub.com') }}
+            <i class="fa-solid fa-envelope"></i> {{ session.get('email', 'akhil@example.com') }}
           </span>
-          <a href="https://github.com" target="_blank" class="contact-pill-item" style="color: #60a5fa;">
-            <i class="fa-brands fa-github"></i> github.com
+          {% if profile.github %}
+          <a href="{{ profile.github }}" target="_blank" class="contact-pill-item" style="color: var(--blue-light);">
+            <i class="fa-brands fa-github"></i> GitHub
           </a>
+          {% endif %}
+          {% if profile.linkedin %}
+          <a href="{{ profile.linkedin }}" target="_blank" class="contact-pill-item" style="color: var(--blue-light);">
+            <i class="fa-brands fa-linkedin"></i> LinkedIn
+          </a>
+          {% endif %}
         </div>
       </div>
-    </div>
 
-    <!-- Live Dynamic KPI Strip -->
-    <div class="kpi-strip">
-      <div class="kpi-item">
-        <div class="kpi-val">{{ applications|length }}</div>
-        <div class="kpi-label">Applications Sent</div>
-      </div>
-
-      <div class="kpi-item">
-        {% set in_review = 0 %}
-        {% for a in applications %}
-          {% if a.status in ['Reviewed', 'Shortlisted', 'Pending'] %}{% set in_review = in_review + 1 %}{% endif %}
-        {% endfor %}
-        <div class="kpi-val" style="color: #38bdf8;">{{ in_review }}</div>
-        <div class="kpi-label">Active in Pipeline</div>
-      </div>
-
-      <div class="kpi-item">
-        {% set accepted = 0 %}
-        {% for a in applications %}{% if a.status == 'Accepted' %}{% set accepted = accepted + 1 %}{% endif %}{% endfor %}
-        <div class="kpi-val" style="color: #34d399;">{{ accepted }}</div>
-        <div class="kpi-label">Offers & Accepted</div>
-      </div>
-
-      <div class="kpi-item">
-        <div class="kpi-val" style="color: #fbbf24;">98%</div>
-        <div class="kpi-label">Profile Strength</div>
+      <div>
+        <button type="button" class="btn-edit-profile-action" onclick="openProfileModal('tab-personal')">
+          <i class="fa-solid fa-pen-to-square"></i> Edit Details
+        </button>
       </div>
     </div>
   </div>
 
   <!-- ==========================================================================
-       LIVE APPLICATION TRACKER (INTERACTIVE 4-STAGE STEPPER)
+       MY JOB APPLICATIONS PIPELINE
        ========================================================================== -->
-  <div class="skills-arsenal-card">
-    <div class="card-heading-row" style="margin-bottom: 22px;">
+  <div class="resume-section-card">
+    <div class="card-heading-row">
       <div>
-        <h3 style="font-size: 20px; font-weight: 800; color: #ffffff;">
+        <h3>
           <i class="fa-solid fa-timeline" style="color: var(--cyan-neon);"></i>
-          Live Application Pipeline Tracker
+          My Application Status
         </h3>
-        <p style="font-size: 13px; color: var(--text-dark-secondary); margin-top: 4px;">
-          Real-time recruitment stage updates from hiring managers.
+        <p style="font-size: 13px; color: var(--text-dark-secondary); margin-top: 3px;">
+          Track your real-time recruitment updates from hiring companies.
         </p>
       </div>
 
-      <a href="{{ url_for('index') }}#jobs" class="btn-search-blue" style="font-size: 13px; padding: 8px 18px;">
-        <i class="fa-solid fa-magnifying-glass"></i> Find More Roles
+      <a href="{{ url_for('index') }}#jobs" class="btn-search-blue" style="font-size: 12.5px; padding: 8px 18px;">
+        <i class="fa-solid fa-magnifying-glass"></i> Browse Internships
       </a>
     </div>
 
-    <div style="display: flex; flex-direction: column; gap: 16px;">
+    <div>
       {% for a in applications %}
       <article class="application-stepper-card">
         <div class="app-card-top-row">
-          <div class="app-company-meta">
-            <!-- Official Company Vector Logo Slot -->
+          <div style="display: flex; align-items: center; gap: 14px;">
             <div class="company-logo-slot" data-company-logo="{{ a.company }}"></div>
-
             <div>
-              <h4 class="app-role-heading">
-                <a href="{{ url_for('internship_detail', internship_id=a.internship_id) }}" style="color: #ffffff; text-decoration: none;">
+              <h4 style="font-size: 17px; font-weight: 700; color: #ffffff;">
+                <a href="{{ url_for('internship_detail', internship_id=a.internship_id) }}" style="color: #ffffff;">
                   {{ a.title }}
                 </a>
               </h4>
-              <p class="app-company-name">
+              <p style="font-size: 13.5px; color: var(--text-dark-secondary); margin-top: 2px;">
                 {{ a.company }} · <i class="fa-solid fa-location-dot" style="color: var(--blue-vibrant); font-size: 11px;"></i> {{ a.location }}
               </p>
             </div>
           </div>
 
-          <div>
+          <div style="display: flex; align-items: center; gap: 10px;">
             <span class="status-badge {{ a.status }}" style="font-size: 12px; padding: 5px 14px;">
-              <i class="fa-solid fa-circle" style="font-size: 7px;"></i>
-              Status: {{ a.status }}
+              <i class="fa-solid fa-circle" style="font-size: 7px;"></i> {{ a.status }}
             </span>
+            <a href="{{ url_for('internship_detail', internship_id=a.internship_id) }}" class="btn-dash-action" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
+              View Role
+            </a>
           </div>
         </div>
 
-        <!-- 4-Stage Visual Progress Stepper -->
+        <!-- 4-Stage Progress Stepper -->
         <div class="progress-stepper">
-          <!-- Stage 1: Applied -->
+          <!-- Step 1 -->
           <div class="stepper-stage completed">
-            <div class="stepper-circle">
-              <i class="fa-solid fa-check"></i>
-            </div>
+            <div class="stepper-circle"><i class="fa-solid fa-check"></i></div>
             <span class="stepper-label">1. Applied</span>
           </div>
 
-          <!-- Stage 2: Under Review -->
+          <!-- Step 2 -->
           <div class="stepper-stage {% if a.status in ['Reviewed', 'Shortlisted', 'Accepted', 'Rejected'] %}completed{% else %}active{% endif %}">
             <div class="stepper-circle">
               {% if a.status in ['Reviewed', 'Shortlisted', 'Accepted', 'Rejected'] %}
@@ -147,7 +129,7 @@
             <span class="stepper-label">2. Under Review</span>
           </div>
 
-          <!-- Stage 3: Shortlisted -->
+          <!-- Step 3 -->
           <div class="stepper-stage {% if a.status in ['Shortlisted', 'Accepted'] %}completed{% elif a.status == 'Reviewed' %}active{% endif %}">
             <div class="stepper-circle">
               {% if a.status in ['Shortlisted', 'Accepted'] %}
@@ -159,9 +141,9 @@
             <span class="stepper-label">3. Shortlisted</span>
           </div>
 
-          <!-- Stage 4: Decision -->
+          <!-- Step 4 -->
           <div class="stepper-stage {% if a.status == 'Accepted' %}completed{% elif a.status == 'Rejected' %}rejected{% elif a.status == 'Shortlisted' %}active{% endif %}">
-            <div class="stepper-circle" {% if a.status == 'Rejected' %}style="background: #ef4444; border-color: #ef4444; color: #fff;"{% endif %}>
+            <div class="stepper-circle">
               {% if a.status == 'Accepted' %}
               <i class="fa-solid fa-trophy"></i>
               {% elif a.status == 'Rejected' %}
@@ -176,25 +158,18 @@
           </div>
         </div>
 
-        <div class="app-card-footer">
-          <span>
-            <i class="fa-regular fa-clock"></i> Applied on {{ a.created_at.strftime('%B %d, %Y') }}
-          </span>
-
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <a href="{{ url_for('internship_detail', internship_id=a.internship_id) }}" class="btn-dash-action" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa;">
-              <i class="fa-solid fa-eye"></i> View Listing
-            </a>
-          </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dark-muted); padding-top: 10px; border-top: 1px solid var(--border-dark);">
+          <span>Applied on {{ a.created_at.strftime('%B %d, %Y') }}</span>
+          <span>Resume submitted to recruiter</span>
         </div>
       </article>
       {% else %}
       <div class="empty-state">
-        <i class="fa-solid fa-paper-plane" style="font-size: 40px; color: var(--cyan-neon);"></i>
-        <h4>No active applications in your pipeline</h4>
-        <p>Explore curated internships and apply to top engineering and tech roles today.</p>
-        <a href="{{ url_for('index') }}#jobs" class="btn-search-blue" style="margin-top: 16px; display: inline-flex;">
-          <i class="fa-solid fa-magnifying-glass"></i> Explore Open Internships
+        <i class="fa-solid fa-paper-plane" style="font-size: 38px; color: var(--cyan-neon);"></i>
+        <h4>No applications submitted yet</h4>
+        <p>Explore opportunities from leading companies and apply to start tracking your status.</p>
+        <a href="{{ url_for('index') }}#jobs" class="btn-search-blue" style="margin-top: 14px; display: inline-flex;">
+          <i class="fa-solid fa-magnifying-glass"></i> Explore Internships
         </a>
       </div>
       {% endfor %}
@@ -202,123 +177,325 @@
   </div>
 
   <!-- ==========================================================================
-       PROFESSIONAL SUMMARY & SKILLS ARSENAL
+       INTERNSHALA-STYLE RESUME DETAILS (EDUCATION, EXPERIENCE, PROJECTS)
        ========================================================================== -->
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-    <!-- Professional Summary -->
-    <div class="skills-arsenal-card">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <!-- Education Card -->
+    <div class="resume-section-card">
       <div class="card-heading-row">
-        <h3 style="font-size: 17px; font-weight: 800; color: #ffffff;">
-          <i class="fa-solid fa-user-astronaut" style="color: var(--blue-vibrant);"></i>
-          Professional Summary
+        <h3>
+          <i class="fa-solid fa-graduation-cap" style="color: var(--blue-vibrant);"></i>
+          Education
         </h3>
-        <button class="card-action-icon" title="Edit Summary" onclick="alert('Profile summary updated!')">
+        <button type="button" class="card-action-icon" onclick="openProfileModal('tab-education')" title="Edit Education">
           <i class="fa-solid fa-pen"></i>
         </button>
       </div>
-      <p class="profile-summary-text" style="font-size: 13.5px; line-height: 1.75; color: #cbd5e1;">
-        Experienced software engineer with 5+ years of hands-on expertise building scalable microservices, interactive web frontends, and distributed cloud applications. Passionate about engineering excellence, test-driven development, and solving high-throughput technical challenges with modern cloud ecosystems.
-      </p>
+
+      <div class="resume-item-box">
+        <div class="resume-item-title" id="display-degree">{{ profile.degree or 'B.S. in Computer Science & Engineering' }}</div>
+        <div class="resume-item-sub" id="display-college">{{ profile.college or 'Stanford University / IIIT' }}</div>
+        <div class="resume-item-meta">
+          Year of Graduation: <strong style="color: #ffffff;" id="display-grad">{{ profile.grad_year or '2026' }}</strong> · CGPA: <strong style="color: #34d399;" id="display-cgpa">{{ profile.cgpa or '3.92 / 4.0' }}</strong>
+        </div>
+      </div>
     </div>
 
-    <!-- Verified Certifications -->
-    <div class="skills-arsenal-card">
+    <!-- Experience & Internships Card -->
+    <div class="resume-section-card">
       <div class="card-heading-row">
-        <h3 style="font-size: 17px; font-weight: 800; color: #ffffff;">
-          <i class="fa-solid fa-shield-halved" style="color: var(--amber-gold);"></i>
-          Verified Certifications
+        <h3>
+          <i class="fa-solid fa-briefcase" style="color: var(--cyan-neon);"></i>
+          Experience & Internships
         </h3>
-        <button class="card-action-icon" title="Add Certification">
-          <i class="fa-solid fa-plus"></i>
+        <button type="button" class="card-action-icon" onclick="openProfileModal('tab-experience')" title="Edit Experience">
+          <i class="fa-solid fa-pen"></i>
         </button>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div class="cert-item" style="background: #0c1527; border-color: #1e2f50;">
-          <div class="cert-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-            <i class="fa-brands fa-aws"></i>
-          </div>
-          <div class="cert-info">
-            <h4 style="font-size: 13.5px;">AWS Certified Solutions Architect</h4>
-            <p>Amazon Web Services · Credential ID: AWS-98124 · 2024</p>
-          </div>
-        </div>
-
-        <div class="cert-item" style="background: #0c1527; border-color: #1e2f50;">
-          <div class="cert-icon" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">
-            <i class="fa-brands fa-google"></i>
-          </div>
-          <div class="cert-info">
-            <h4 style="font-size: 13.5px;">Google Cloud Associate Cloud Engineer</h4>
-            <p>Google Cloud · Issued Dec 2024</p>
-          </div>
+      <div class="resume-item-box">
+        <div class="resume-item-desc" id="display-experience" style="margin-top: 0;">
+          {{ profile.experience or 'Frontend Engineering Intern at TechFlow (6 mos) · Contributed to customer portal redesign with React and Next.js.' }}
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Interactive Skills Arsenal -->
-  <div class="skills-arsenal-card">
+  <!-- Projects & Summary Row -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+    <!-- Projects Card -->
+    <div class="resume-section-card">
+      <div class="card-heading-row">
+        <h3>
+          <i class="fa-solid fa-code-fork" style="color: var(--purple-accent);"></i>
+          Academic & Personal Projects
+        </h3>
+        <button type="button" class="card-action-icon" onclick="openProfileModal('tab-experience')" title="Edit Projects">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+      </div>
+
+      <div class="resume-item-box">
+        <div class="resume-item-desc" id="display-projects" style="margin-top: 0;">
+          {{ profile.projects or 'CloudFlow: Distributed task queue in Go & Redis · Real-time collaborative whiteboard in WebSockets.' }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Professional Summary Card -->
+    <div class="resume-section-card">
+      <div class="card-heading-row">
+        <h3>
+          <i class="fa-solid fa-user-astronaut" style="color: var(--blue-light);"></i>
+          Professional Summary
+        </h3>
+        <button type="button" class="card-action-icon" onclick="openProfileModal('tab-personal')" title="Edit Summary">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+      </div>
+
+      <div class="resume-item-box">
+        <p class="resume-item-desc" id="display-summary" style="margin-top: 0;">
+          {{ profile.summary or 'Experienced software engineer with hands-on expertise building scalable microservices, interactive web frontends, and distributed cloud applications. Passionate about engineering excellence, test-driven development, and solving high-throughput technical challenges.' }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Verified Certifications Card (CLEAN DESIGN - NO UGLY HORIZONTAL STRIPES) -->
+  <div class="resume-section-card">
     <div class="card-heading-row">
-      <h3 style="font-size: 18px; font-weight: 800; color: #ffffff;">
-        <i class="fa-solid fa-layer-group" style="color: var(--cyan-neon);"></i>
-        Interactive Skills Arsenal
+      <h3>
+        <i class="fa-solid fa-shield-halved" style="color: var(--amber-gold);"></i>
+        Certifications & Accreditations
       </h3>
-      <button class="card-action-icon" onclick="addNewSkill()" title="Add Custom Skill">
-        <i class="fa-solid fa-plus"></i>
+      <button type="button" class="card-action-icon" onclick="openProfileModal('tab-skills')" title="Edit Certifications">
+        <i class="fa-solid fa-pen"></i>
       </button>
     </div>
 
-    <!-- Frontend -->
-    <div class="skills-category-group">
-      <div class="skills-category-title">Frontend & Web Technologies</div>
-      <div class="skills-pills-wrap" id="skills-frontend">
-        <span class="luxury-skill-pill"><i class="fa-brands fa-react"></i> React 19</span>
-        <span class="luxury-skill-pill"><i class="fa-brands fa-js"></i> TypeScript</span>
-        <span class="luxury-skill-pill"><i class="fa-brands fa-vuejs"></i> Vue.js</span>
-        <span class="luxury-skill-pill"><i class="fa-solid fa-code"></i> Next.js</span>
-        <span class="luxury-skill-pill"><i class="fa-brands fa-css3-alt"></i> Tailwind CSS</span>
-        <span class="luxury-skill-pill"><i class="fa-solid fa-wand-magic-sparkles"></i> Redux Toolkit</span>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+      <div class="cert-card-clean">
+        <div class="cert-icon-clean" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+          <i class="fa-brands fa-aws"></i>
+        </div>
+        <div>
+          <h4 style="font-size: 14px; font-weight: 700; color: #ffffff;">AWS Certified Solutions Architect</h4>
+          <p style="font-size: 12px; color: var(--text-dark-muted);">Amazon Web Services · Verified Credential</p>
+        </div>
+      </div>
+
+      <div class="cert-card-clean">
+        <div class="cert-icon-clean" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);">
+          <i class="fa-brands fa-google"></i>
+        </div>
+        <div>
+          <h4 style="font-size: 14px; font-weight: 700; color: #ffffff;">Google Cloud Associate Cloud Engineer</h4>
+          <p style="font-size: 12px; color: var(--text-dark-muted);">Google Cloud Certification · Verified</p>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- Backend & Systems -->
-    <div class="skills-category-group">
-      <div class="skills-category-title">Backend, APIs & Databases</div>
-      <div class="skills-pills-wrap">
-        <span class="luxury-skill-pill"><i class="fa-brands fa-node"></i> Node.js</span>
-        <span class="luxury-skill-pill"><i class="fa-brands fa-python"></i> Python / FastAPI</span>
-        <span class="luxury-skill-pill"><i class="fa-solid fa-database"></i> PostgreSQL</span>
-        <span class="luxury-skill-pill"><i class="fa-solid fa-leaf"></i> MongoDB</span>
-        <span class="luxury-skill-pill"><i class="fa-solid fa-bolt"></i> Redis</span>
-        <span class="luxury-skill-pill"><i class="fa-solid fa-network-wired"></i> GraphQL & gRPC</span>
-      </div>
+  <!-- Skills Arsenal Card -->
+  <div class="resume-section-card">
+    <div class="card-heading-row">
+      <h3>
+        <i class="fa-solid fa-layer-group" style="color: var(--cyan-neon);"></i>
+        Skills Arsenal
+      </h3>
+      <button type="button" class="card-action-icon" onclick="openProfileModal('tab-skills')" title="Edit Skills">
+        <i class="fa-solid fa-pen"></i>
+      </button>
     </div>
 
-    <!-- Cloud & DevOps -->
-    <div class="skills-category-group">
-      <div class="skills-category-title">Cloud Infrastructure & DevOps</div>
-      <div class="skills-pills-wrap">
-        <span class="luxury-skill-pill"><i class="fa-brands fa-aws"></i> AWS Lambda & S3</span>
-        <span class="luxury-skill-pill"><i class="fa-brands fa-docker"></i> Docker</span>
-        <span class="luxury-skill-pill"><i class="fa-solid fa-dharmachakra"></i> Kubernetes</span>
-        <span class="luxury-skill-pill"><i class="fa-brands fa-git-alt"></i> CI/CD GitHub Actions</span>
-        <span class="luxury-skill-pill"><i class="fa-solid fa-chart-line"></i> Prometheus & Grafana</span>
-      </div>
+    <div class="skills-pills-wrap" id="display-skills-wrap">
+      {% set skills_list = (profile.skills or 'React 19, TypeScript, Python, Node.js, PostgreSQL, Docker, AWS, Tailwind CSS, Kubernetes').split(',') %}
+      {% for s in skills_list %}
+      <span class="luxury-skill-pill">
+        <i class="fa-solid fa-circle-check" style="color: var(--cyan-neon); font-size: 10px;"></i>
+        {{ s.strip() }}
+      </span>
+      {% endfor %}
     </div>
   </div>
 </div>
 
+<!-- ==========================================================================
+     INTERNSHALA-STYLE EDIT PROFILE & RESUME MODAL
+     ========================================================================== -->
+<div class="modal-backdrop" id="profile-edit-modal" onclick="closeOnBackdrop(event)">
+  <div class="modal-dialog-luxury">
+    <!-- Modal Header -->
+    <div class="modal-header-luxury">
+      <div>
+        <h3 style="font-size: 18px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-id-card" style="color: var(--blue-vibrant);"></i>
+          Edit Resume Details
+        </h3>
+        <p style="font-size: 12.5px; color: var(--text-dark-secondary); margin-top: 2px;">
+          Update your student profile details just like Internshala.
+        </p>
+      </div>
+      <button type="button" onclick="closeProfileModal()" style="background: none; border: none; color: var(--text-dark-muted); font-size: 18px; cursor: pointer;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Modal Tabs Navigation -->
+    <div class="modal-tabs-bar">
+      <button type="button" class="modal-tab-pill active" id="tab-btn-personal" onclick="switchModalTab('personal')">
+        <i class="fa-solid fa-user"></i> Personal Details
+      </button>
+      <button type="button" class="modal-tab-pill" id="tab-btn-education" onclick="switchModalTab('education')">
+        <i class="fa-solid fa-graduation-cap"></i> Education
+      </button>
+      <button type="button" class="modal-tab-pill" id="tab-btn-experience" onclick="switchModalTab('experience')">
+        <i class="fa-solid fa-briefcase"></i> Experience & Projects
+      </button>
+      <button type="button" class="modal-tab-pill" id="tab-btn-skills" onclick="switchModalTab('skills')">
+        <i class="fa-solid fa-layer-group"></i> Skills & Links
+      </button>
+    </div>
+
+    <!-- Form Submitting to Backend Route -->
+    <form method="post" action="{{ url_for('update_student_profile') }}" id="student-edit-form" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+      <div class="modal-body-scroll">
+        <!-- TAB 1: PERSONAL DETAILS -->
+        <div id="modal-tab-personal">
+          <div class="form-floating-group">
+            <label class="form-floating-label">Full Name *</label>
+            <input type="text" name="name" class="form-control" required value="{{ session.get('name', 'Akhil Reddy') }}">
+          </div>
+
+          <div class="form-floating-group">
+            <label class="form-floating-label">Professional Headline / Role Title</label>
+            <input type="text" name="headline" class="form-control" placeholder="e.g. Full Stack Developer · Cloud Engineering" value="{{ profile.headline or '' }}">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-floating-group">
+              <label class="form-floating-label">Contact Phone</label>
+              <input type="text" name="phone" class="form-control" placeholder="+1 (555) 000-0000" value="{{ profile.phone or '' }}">
+            </div>
+            <div class="form-floating-group">
+              <label class="form-floating-label">Current City / Location</label>
+              <input type="text" name="location" class="form-control" placeholder="e.g. Bangalore, India" value="{{ profile.location or '' }}">
+            </div>
+          </div>
+
+          <div class="form-floating-group">
+            <label class="form-floating-label">Professional Summary / Bio</label>
+            <textarea name="summary" class="form-control" rows="4" placeholder="Brief summary of your skills, passion, and career aspirations...">{{ profile.summary or '' }}</textarea>
+          </div>
+        </div>
+
+        <!-- TAB 2: EDUCATION -->
+        <div id="modal-tab-education" style="display: none;">
+          <div class="form-floating-group">
+            <label class="form-floating-label">College / University Name *</label>
+            <input type="text" name="college" class="form-control" placeholder="e.g. Stanford University / IIIT" value="{{ profile.college or '' }}">
+          </div>
+
+          <div class="form-floating-group">
+            <label class="form-floating-label">Degree & Field of Study *</label>
+            <input type="text" name="degree" class="form-control" placeholder="e.g. B.Tech in Computer Science" value="{{ profile.degree or '' }}">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-floating-group">
+              <label class="form-floating-label">Graduation Year</label>
+              <input type="text" name="grad_year" class="form-control" placeholder="e.g. 2026" value="{{ profile.grad_year or '' }}">
+            </div>
+            <div class="form-floating-group">
+              <label class="form-floating-label">Performance / CGPA</label>
+              <input type="text" name="cgpa" class="form-control" placeholder="e.g. 3.92 / 4.0 or 8.8 / 10" value="{{ profile.cgpa or '' }}">
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: EXPERIENCE & PROJECTS -->
+        <div id="modal-tab-experience" style="display: none;">
+          <div class="form-floating-group">
+            <label class="form-floating-label">Work Experience / Past Internships</label>
+            <textarea name="experience" class="form-control" rows="4" placeholder="Role, Company name, Duration, key contributions...">{{ profile.experience or '' }}</textarea>
+          </div>
+
+          <div class="form-floating-group">
+            <label class="form-floating-label">Academic & Personal Projects</label>
+            <textarea name="projects" class="form-control" rows="4" placeholder="Project name, tech stack used, links, brief description...">{{ profile.projects or '' }}</textarea>
+          </div>
+        </div>
+
+        <!-- TAB 4: SKILLS & SOCIAL LINKS -->
+        <div id="modal-tab-skills" style="display: none;">
+          <div class="form-floating-group">
+            <label class="form-floating-label">Key Technical Skills (Comma-separated)</label>
+            <input type="text" name="skills" class="form-control" placeholder="React 19, TypeScript, Python, Node.js, AWS, Docker" value="{{ profile.skills or '' }}">
+          </div>
+
+          <div class="form-floating-group">
+            <label class="form-floating-label">Certifications</label>
+            <input type="text" name="certifications" class="form-control" placeholder="e.g. AWS Certified Solutions Architect, Google Cloud Associate" value="{{ profile.certifications or '' }}">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="form-floating-group">
+              <label class="form-floating-label">GitHub URL</label>
+              <input type="url" name="github" class="form-control" placeholder="https://github.com/username" value="{{ profile.github or '' }}">
+            </div>
+            <div class="form-floating-group">
+              <label class="form-floating-label">LinkedIn URL</label>
+              <input type="url" name="linkedin" class="form-control" placeholder="https://linkedin.com/in/username" value="{{ profile.linkedin or '' }}">
+            </div>
+          </div>
+
+          <div class="form-floating-group">
+            <label class="form-floating-label">Portfolio Website URL</label>
+            <input type="url" name="portfolio" class="form-control" placeholder="https://yourportfolio.dev" value="{{ profile.portfolio or '' }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer-bar">
+        <button type="button" class="btn-dash-action" onclick="closeProfileModal()">Cancel</button>
+        <button type="submit" class="btn-search-blue">
+          <i class="fa-solid fa-floppy-disk"></i> Save & Update Resume
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Internshala-Style Modal Scripts -->
 <script>
-function addNewSkill() {
-  const name = prompt('Enter a new skill name:');
-  if (name && name.trim()) {
-    const wrap = document.getElementById('skills-frontend');
-    const pill = document.createElement('span');
-    pill.className = 'luxury-skill-pill';
-    pill.innerHTML = '<i class="fa-solid fa-star" style="color: #fbbf24;"></i> ' + name.trim();
-    wrap.appendChild(pill);
+function openProfileModal(tabKey) {
+  const modal = document.getElementById('profile-edit-modal');
+  modal.classList.add('open');
+  if (tabKey) {
+    if (tabKey.includes('personal')) switchModalTab('personal');
+    else if (tabKey.includes('education')) switchModalTab('education');
+    else if (tabKey.includes('experience')) switchModalTab('experience');
+    else if (tabKey.includes('skills')) switchModalTab('skills');
   }
+}
+
+function closeProfileModal() {
+  document.getElementById('profile-edit-modal').classList.remove('open');
+}
+
+function closeOnBackdrop(e) {
+  if (e.target.id === 'profile-edit-modal') {
+    closeProfileModal();
+  }
+}
+
+function switchModalTab(tab) {
+  ['personal', 'education', 'experience', 'skills'].forEach(t => {
+    document.getElementById('modal-tab-' + t).style.display = (t === tab) ? 'block' : 'none';
+    document.getElementById('tab-btn-' + t).classList.toggle('active', t === tab);
+  });
 }
 </script>
 {% endblock %}
